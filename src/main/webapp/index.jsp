@@ -20,7 +20,7 @@
     <meta name="author" content="Nekodop Team" />
 
     <!-- Favicon -->
-    <link rel="icon" href="/images/NekoDopLogoAlt.png" type="image/x-icon" />
+    <link rel="icon" href="images/NekoDopLogoAlt.png" type="image/x-icon" />
 
     <!-- Styles -->
     <link rel="stylesheet" href="styles/global.css" />
@@ -54,7 +54,7 @@
   <body>
     <!-- Preloader -->
     <div id="preloader" class="preloader">
-      <img src="/images/preloader.gif" alt="" />
+      <img src="images/preloader.gif" alt="" />
     </div>
     <!-- Main Content -->
     <main id="main-content">
@@ -145,12 +145,12 @@
               <div class="blob blob-1"></div>
               <div class="blob blob-2"></div>
               <img
-                src="/images/white-cat.png"
+                src="images/white-cat.png"
                 alt="Cat illustration"
                 class="cat1-image"
               />
               <img
-                src="/images/black-cat.png"
+                src="images/black-cat.png"
                 alt="Cat illustration"
                 class="cat2-image"
               />
@@ -254,7 +254,7 @@
           <div>
             <img
               class="support-banner"
-              src="/images/support_banner.jpg"
+              src="images/support_banner.jpg"
               alt="Support Image"
             />
           </div>
@@ -271,7 +271,7 @@
           </div>
           <section class="how-it-section">
             <div class="support-img">
-              <img class="" src="/images/heart_donation.png" alt="" />
+              <img class="" src="images/heart_donation.png" alt="" />
             </div>
             <div class="text-content">
               <h2>Donate to Support Our Cause</h2>
@@ -284,7 +284,7 @@
           </section>
           <section class="how-it-section">
             <div class="support-img">
-              <img class="" src="/images/question.png" alt="" />
+              <img class="" src="images/question.png" alt="" />
             </div>
             <div class="text-content">
               <h2>Why Your Support Matters</h2>
@@ -298,7 +298,7 @@
           </section>
           <section class="how-it-section">
             <div class="support-img">
-              <img class="" src="/images/bkash_logo.png" alt="" />
+              <img class="" src="images/bkash_logo.png" alt="" />
             </div>
             <div class="text-content">
               <h2>How to Donate</h2>
@@ -411,7 +411,7 @@
                       <div class="trail">
                         <img
                           class="paper-plane paper-plane-img"
-                          src="/images/paperfly.png"
+                          src="images/paperfly.png"
                           alt="Paper Plane"
                         />
                       </div>
@@ -429,7 +429,7 @@
       <div class="footer-logo">
         <img
           class="footer-logo-img"
-          src="/images/NekoDopLogo.png"
+          src="images/NekoDopLogo.png"
           alt="Nekodop Logo"
         />
       </div>
