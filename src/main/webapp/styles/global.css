@@ -1,0 +1,253 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "DynaPuff", serif;
+  font-optical-sizing: auto;
+}
+
+html,
+body {
+  scroll-behavior: smooth;
+  cursor: url("../images/cursor.png"), auto;
+  height: 100%;
+}
+
+input:hover,
+button:hover,
+a:hover,
+textarea:hover,
+ul:hover,
+li:hover,
+.profile-img:hover,
+.card:hover,
+select:hover,
+.profile-links li:hover,
+.dropdown-menu a:hover,
+.dropdown-menu button:hover {
+  cursor: url("../images/cursor-pointer.png"), pointer;
+}
+
+body {
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+main {
+  flex: 1;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.hidden {
+  display: none;
+}
+
+input::file-selector-button {
+  font-family: "DynaPuff", serif;
+  background-color: #9c8aa5;
+  color: white;
+  border: none;
+  margin-right: 3px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.container {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  padding-right: 1rem;
+  padding-left: 1rem;
+}
+.active {
+  color: #e4c9fa;
+  font-weight: bold;
+}
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  margin: 1px;
+}
+
+.tooltip-container .tooltip-text {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  white-space: nowrap;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Show tooltip on hover */
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Arrow */
+.tooltip-container .tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+  transform: translateX(-50%);
+}
+
+.filter-section {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.filter-section input[type="text"] {
+  padding: 10px 15px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.filter-section input[type="text"]:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+/* .explore {
+  height: 100vh;
+} */
+
+#gender-filters {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+#gender-filters label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#gender-filters input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+
+#contact {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  height: 100vh;
+}
+.loader-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  width: 100vw;
+  height: 100vh;
+}
+.loader-purple {
+  border: 5px solid #cfadee;
+}
+.loader-white {
+  border: 5px solid #000000;
+}
+.loader {
+  width: 48px;
+  height: 48px;
+  border-bottom-color: transparent;
+  margin-top: 100px;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@media (min-width: 640px) {
+  .filter-section {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  #gender-filters {
+    gap: 30px;
+  }
+}
+
+@media (min-width: 640px) {
+  .container {
+    max-width: 640px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+  }
+  .card-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1280px;
+  }
+  .card-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1536px) {
+  .container {
+    max-width: 1536px;
+  }
+  .card-container {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
