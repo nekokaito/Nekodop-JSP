@@ -7,13 +7,12 @@
     boolean registrationSuccess = false;
     String message = null;
     if ("POST".equalsIgnoreCase(request.getMethod())) {
+        String userId = java.util.UUID.randomUUID().toString();
         String name = request.getParameter("name");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         String rePassword = request.getParameter("re-password");
-        String base64Photo = request.getParameter("profilePhotoBase64");
-        
-        
+        String profilePhotoUrl = request.getParameter("profilePhotoUrl");
         
         if (name == null || email == null || password == null || rePassword == null ||
             name.trim().isEmpty() || email.trim().isEmpty() || password.isEmpty() || rePassword.isEmpty()) {
@@ -35,56 +34,41 @@
                 if (rs.next() && rs.getInt(1) > 0) {
                     message = "Email is already registered!";
                 } else {
-                    if (ps != null) ps.close();
+                    // Close previous resources
                     if (rs != null) rs.close();
-                    
-                    byte[] photoBytes = null;
-                    InputStream photoStream = null;
-
-                    if (base64Photo != null && !base64Photo.trim().isEmpty()) {
-                        String base64Data = base64Photo.split(",")[1];
-                        photoBytes = java.util.Base64.getDecoder().decode(base64Data);
-                        photoStream = new java.io.ByteArrayInputStream(photoBytes);
-                    }
+                    if (ps != null) ps.close();
 
                     // Insert user data
                     ps = conn.prepareStatement("INSERT INTO users (id, name, email, password, profile_picture, user_role, created_at) VALUES (?, ?, ?, ?, ?, 'user', CURRENT_TIMESTAMP)");
-                    String userId = java.util.UUID.randomUUID().toString();
                     ps.setString(1, userId);
                     ps.setString(2, name);
                     ps.setString(3, email);
                     ps.setString(4, password);
                     
-                    if (base64Photo == null || base64Photo.trim().isEmpty()) {
-                        ps.setNull(5, java.sql.Types.CLOB);
-                      } else {
-                        ps.setString(5, base64Photo);
-                      }
+                    if (profilePhotoUrl == null || profilePhotoUrl.trim().isEmpty()) {
+                        ps.setNull(5, java.sql.Types.VARCHAR);
+                    } else {
+                        ps.setString(5, profilePhotoUrl);
+                    }
                     
                     int inserted = ps.executeUpdate();
                     
-                    if(photoStream != null) photoStream.close();
-
                     if (inserted > 0) {
                         // Save user info in session
                         session.setAttribute("userId", userId);
                         session.setAttribute("userName", name);
                         session.setAttribute("userEmail", email);
-                        session.setAttribute("userProfilePicture", base64Photo);
+                        session.setAttribute("userProfilePicture", profilePhotoUrl);
 
-
-                        
                         registrationSuccess = true;
                         message = "Registration successful!";
-                        System.out.print(message);
                     } else {
                         message = "Registration failed, please try again.";
-                        System.out.print(message);
                     }
                 }
-
             } catch (Exception e) {
                 message = "Error: " + e.getMessage();
+                e.printStackTrace();
             } finally {
                 if (rs != null) try { rs.close(); } catch(Exception ignored) {}
                 if (ps != null) try { ps.close(); } catch(Exception ignored) {}
@@ -93,9 +77,6 @@
         }
     }
 %>
-
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -117,6 +98,7 @@
       href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="signup-body">
     <div id="toast-container"></div>
@@ -128,13 +110,10 @@
       </a>
     </div>
     <div class="contact-container">
-
       <section class="form-section">
         <div class="logo">
           <span class="logo-text">Sign Up</span>
         </div>
-
-       
 
         <form id="signup-form" method="post" action="signup.jsp">
           <div class="form-row"></div>
@@ -144,12 +123,12 @@
           </div>
           <div class="form-group">
             <label for="email">Email Address</label>
-            <input type="email" id="email" name="email"  required/>
+            <input type="email" id="email" name="email" required/>
           </div>
           <div class="form-group">
             <label for="profile-photo">Upload Profile Photo</label>
-            <input type="file" id="profile-photo" name="profile-photo" accept="image/*" />
-            <input type="hidden" id="profile-photo-base64" name="profilePhotoBase64" />
+            <input type="file" id="profile-photo" accept="image/*" />
+             <input type="hidden" name="profilePhotoUrl" id="profile-photo-url" />
           </div>
           <div class="form-group">
             <label for="password">Password</label>
@@ -169,11 +148,11 @@
           </span>
         </form>
       </section>
- <% if (message != null) { %>
-          <div style="color: <%= message.contains("successful") ? "green" : "red" %>; margin-bottom: 1rem;">
-            <%= message %>
-          </div>
-        <% } %>
+      <% if (message != null) { %>
+        <div style="color: <%= message.contains("successful") ? "green" : "red" %>; margin: 1rem auto; text-align: center;">
+          <%= message %>
+        </div>
+      <% } %>
       <section class="content-section">
         <div class="content">
           <div class="illustration">
@@ -191,38 +170,45 @@
           </div>
         </div>
       </section>
-
     </div>
-</body>
-<script src="scripts/toast.js"></script>
-  <script>
-      (function() {
-        var profilePhotoInput = document.getElementById("profile-photo");
-        var base64Input = document.getElementById("profile-photo-base64");
+    <script src="scripts/toast.js"></script>
+    <script>
+      document.getElementById("profile-photo").addEventListener("change", async function() {
+          const file = this.files[0];
+          if (!file) return;
 
-        profilePhotoInput.addEventListener("change", function() {
-          var file = this.files[0];
-          if (file) {
-            var reader = new FileReader();
-            reader.onloadend = function() {
-              base64Input.value = reader.result; 
-            };
-            reader.readAsDataURL(file);
+          try {
+              const formData = new FormData();
+              formData.append("file", file);
+              formData.append("upload_preset", "nekodop");
+              formData.append("cloud_name", "dyvqe1hgj");
+
+              const res = await fetch(
+                "https://api.cloudinary.com/v1_1/dyvqe1hgj/image/upload",
+                {
+                    method: "POST",
+                    body: formData,
+                }
+              );
+
+              const uploadedImg = await res.json();
+              document.getElementById("profile-photo-url").value = uploadedImg.secure_url;
+          } catch (err) {
+              console.error("Upload error", err);
+              alert("Failed to upload image");
           }
-        });
-      })();
-    </script>
-    
-  <% if (message != null) { %>
-  <script>
-    window.onload = function() {
-      showToast("<%= message %>", "<%= registrationSuccess ? "success" : "error" %>");
-      <% if (registrationSuccess) { %>
-        setTimeout(function() {
-          window.location.href = "index.jsp"; // redirect after 2 seconds
-        }, 2000);
+      });
+      
+      <% if (message != null) { %>
+        window.onload = function() {
+          showToast("<%= message %>", "<%= registrationSuccess ? "success" : "error" %>");
+          <% if (registrationSuccess) { %>
+            setTimeout(function() {
+              window.location.href = "index.jsp";
+            }, 2000);
+          <% } %>
+        }
       <% } %>
-    }
-  </script>
-<% } %>
+    </script>
+</body>
 </html>

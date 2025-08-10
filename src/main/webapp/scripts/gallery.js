@@ -1,4 +1,4 @@
-export const galleryImages = () => {
+document.addEventListener("DOMContentLoaded", function () { 
   const images = [
     {
       title: "Abyssinian",
@@ -212,22 +212,26 @@ export const galleryImages = () => {
     },
   ];
 
-  const galleryContainer = document.querySelector(".gallery-container");
+   const galleryContainer = document.querySelector(".gallery-container");
+    if (!galleryContainer) return; 
 
-  images.map((image) => {
-    const imgDiv = document.createElement("div");
-    imgDiv.classList.add("gallery-item");
+    // optional: clear container before adding
+    galleryContainer.innerHTML = "";
 
-    const title = document.createElement("h3");
-    title.textContent = `${image.title}`;
+    images.forEach((image) => {
+      const imgDiv = document.createElement("div");
+      imgDiv.classList.add("gallery-item");
 
-    const imgElement = document.createElement("img");
-    imgElement.src = image.img_src;
-    imgElement.alt = image.title;
+      const title = document.createElement("h3");
+      title.textContent = image.title;
 
-    imgDiv.appendChild(imgElement);
-    imgDiv.appendChild(title);
+      const imgElement = document.createElement("img");
+      imgElement.src = image.img_src;
+      imgElement.alt = image.title;
 
-    galleryContainer.appendChild(imgDiv);
+      imgDiv.appendChild(imgElement);
+      imgDiv.appendChild(title);
+
+      galleryContainer.appendChild(imgDiv);
+    });
   });
-};
