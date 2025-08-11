@@ -39,7 +39,7 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
                     session.setAttribute("userEmail", rs.getString("email"));
                     session.setAttribute("userProfilePicture", rs.getString("profile_picture"));
                     session.setAttribute("userRole", rs.getString("user_role"));
-                    
+                    session.setAttribute("createdAt", rs.getString("created_at"));
                     // Set success message and flag
                     message = "Login successful! Redirecting...";
                     isSuccess = true;
