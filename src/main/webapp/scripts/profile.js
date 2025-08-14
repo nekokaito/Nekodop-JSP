@@ -138,20 +138,67 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Edit cat functionality
-    const editBtns = document.querySelectorAll('.edit-cat');
-    editBtns.forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            const catCard = this.closest('.cat-card');
-            if (!catCard || !editPostModal) return;
-            
-            const catId = catCard.dataset.id;
-            const catName = catCard.querySelector('h3');
-            const nameText = catName ? catName.textContent : '';
-            
-            document.getElementById('edit-cat-name').value = nameText;
-            editPostModal.classList.add('show');
-        });
-    });
+	const openBtnModal = document.querySelectorAll('.edit-cat');
+	const closeBtnModal = document.getElementById("close-btn");
+	const editCatModal  = document.getElementById("edit-post-modal");
+
+	// Loop through all edit buttons
+	openBtnModal.forEach(btn => {
+	  btn.addEventListener("click", function (e) {
+	    const card = e.target.closest(".cat-card");
+	    const catId = card.dataset.id;
+
+	    if (catId) {
+	      loadCatData(catId);
+	      console.log("Opening modal for cat:", catId);
+	    }
+
+	    editCatModal.classList.remove("hidden");
+	    editCatModal.classList.add("modal");
+	  });
+	});
+
+	// Close modal
+	closeBtnModal.addEventListener("click", function () {
+	  editCatModal.classList.remove("modal");
+	  editCatModal.classList.add("hidden");
+	});
+
+
+
+	async function loadCatData(catId) {
+	  try {
+	    const res = await fetch(`get-cat.jsp?id=${catId}`);
+	    const cat = await res.json();
+        console.log(cat)
+	    
+
+	    // fill form fields with old values
+	    document.getElementById("edit-cat-name").value = cat.name;
+
+	    // split age into year/month
+	    const yearMatch = cat.age.match(/(\d+)\s*year/);
+	    const monthMatch = cat.age.match(/(\d+)\s*month/);
+	    document.getElementById("edit-year").value = yearMatch ? yearMatch[1] : 0;
+	    document.getElementById("edit-month").value = monthMatch ? monthMatch[1] : 0;
+
+	    document.getElementById("edit-gender").value = cat.gender;
+	    document.getElementById("edit-status").value = cat.adopted ? "1" : "0";
+	    document.getElementById("edit-phone").value = cat.phone;
+	    document.getElementById("edit-address").value = cat.address;
+	    document.getElementById("edit-additional").value = cat.additional;
+	    document.getElementById("edit-description").value = cat.description;
+	    document.getElementById("edit-cat-image-current").value = cat.image;
+
+	    // show modal
+	    document.getElementById("edit-post-modal").classList.remove("hidden");
+	  } catch (err) {
+	    console.error(err);
+	    showToast("Error loading cat data", "error");
+	  }
+	}
+	
+	
 
     // Cloudinary image upload
     function uploadImageToCloudinary(file) {

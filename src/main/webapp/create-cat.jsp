@@ -1,4 +1,5 @@
 <%@ page import="java.sql.*, java.util.UUID" %>
+<%@ page import="utils.DBConnection" %>
 <%
 // Set content type to JSON
 response.setContentType("application/json");
@@ -40,8 +41,7 @@ try {
 
 try {
     // Database connection
-    Class.forName("oracle.jdbc.driver.OracleDriver");
-    Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "system", "a12345");
+    Connection conn = DBConnection.getConnection();
 
     // Build age string
   // Fix age concatenation logic:

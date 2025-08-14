@@ -323,7 +323,7 @@ try {
                             </div>
                         <% } else { %>
                             <% for (Map<String, String> cat : userCats) { %>
-                                <div class="cat-card card" data-id="<%= cat.get("id") %>">
+                                <div class="cat-card card update-cat" data-id="<%= cat.get("id") %>">
                                     <img src="<%= cat.get("image") %>" alt="<%= cat.get("name") %>" />
                                     <div class="cat-card-body">
                                         <div class="cat-info">
@@ -352,7 +352,7 @@ try {
                                         </div>
                                         <div class="card-actions">
                                             <div class="tooltip-container">
-                                                <button class="btn edit-cat"><i class="fa-solid fa-pen-to-square"></i></button>
+                                                <button class="btn edit-cat" data-id="<%= cat.get("id") %>"><i class="fa-solid fa-pen-to-square"></i></button>
                                                 <span class="tooltip-text">Edit Details</span>
                                             </div>
                                             <div class="tooltip-container">
@@ -367,9 +367,9 @@ try {
                     </div>
 
                     <!-- Edit Post Modal -->
-                    <div id="edit-post-modal" class="modal">
+                    <div id="edit-post-modal" class="hidden">
                         <div class="modal-content">
-                            <span class="close-btn">&times;</span>
+                            <span id="close-btn" class="close-btn">&times;</span>
                             <h2>Edit Cat Post</h2>
                             <form id="edit-post-form">
                                 <div class="form-group">
@@ -456,5 +456,6 @@ try {
     <script src="scripts/toast.js"></script>
     <script src="https://kit.fontawesome.com/ef66a13064.js" crossorigin="anonymous"></script>
     <script src="scripts/profile.js"></script>
+    <script src="scripts/update-cat.js"></script>
 </body>
 </html>

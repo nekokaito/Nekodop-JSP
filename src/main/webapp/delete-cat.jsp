@@ -1,4 +1,4 @@
-<%@ page import="java.sql.*" %>
+<%@ page import="java.sql.*, utils.DBConnection" %>
 <%@ page contentType="application/json" language="java" %>
 <%
     String catId = request.getParameter("id");
@@ -6,8 +6,7 @@
     
     if (catId != null) {
         try {
-            Class.forName("oracle.jdbc.driver.OracleDriver");
-            Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "system", "a12345");
+            Connection conn = DBConnection.getConnection();
             
             String sql = "DELETE FROM cats WHERE id = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
