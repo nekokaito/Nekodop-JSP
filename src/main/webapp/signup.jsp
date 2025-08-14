@@ -1,4 +1,4 @@
-<%@ page import="java.sql.*" %>
+<%@ page import="java.sql.*, utils.DBConnection" %>
 <%@ page import="javax.servlet.http.*,javax.servlet.*" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.io.InputStream" %>
@@ -24,8 +24,7 @@
             PreparedStatement ps = null;
             ResultSet rs = null;
             try {
-                Class.forName("oracle.jdbc.driver.OracleDriver");
-                conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "system", "a12345");
+               conn = DBConnection.getConnection();
 
                 // Check if email already exists
                 ps = conn.prepareStatement("SELECT COUNT(*) FROM users WHERE email = ?");

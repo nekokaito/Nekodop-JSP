@@ -1,4 +1,4 @@
-<%@ page import="java.sql.*" %>
+<%@ page import="java.sql.*, utils.DBConnection" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Map" %>
@@ -58,9 +58,7 @@ if (createdAt != null) {
 // Fetch user's cats from database
 List<Map<String, String>> userCats = new ArrayList<>();
 try {
-    Class.forName("oracle.jdbc.driver.OracleDriver");
-    Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "system", "a12345");
-    
+    Connection conn = DBConnection.getConnection();
     String sql = "SELECT * FROM cats WHERE cat_owner_id = ?";
     PreparedStatement ps = conn.prepareStatement(sql);
     ps.setString(1, userId);
@@ -195,7 +193,7 @@ try {
                 </div>
                 
                 <!-- Edit Profile Modal -->
-                <div id="edit-profile-modal" class="modal hidden">
+                <div id="edit-profile-modal" class="hidden">
                     <div class="modal-content">
                         <span class="close-btn-profile">&times;</span>
                         <h2>Edit Profile</h2>
@@ -325,7 +323,7 @@ try {
                             </div>
                         <% } else { %>
                             <% for (Map<String, String> cat : userCats) { %>
-                                <div class="cat-card" data-id="<%= cat.get("id") %>">
+                                <div class="cat-card card" data-id="<%= cat.get("id") %>">
                                     <img src="<%= cat.get("image") %>" alt="<%= cat.get("name") %>" />
                                     <div class="cat-card-body">
                                         <div class="cat-info">

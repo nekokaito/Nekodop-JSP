@@ -36,52 +36,48 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Modal functionality
-    const editProfileBtn = document.querySelector('.edit-profile-btn');
-    const editProfileModal = document.getElementById('edit-profile-modal');
-    const closeProfileModal = document.querySelector('.close-btn-profile');
-    const closePostModal = document.querySelector('.close-btn');
-    const editPostModal = document.getElementById('edit-post-modal');
 
-    if (editProfileBtn && editProfileModal) {
-        editProfileBtn.addEventListener('click', function() {
-            editProfileModal.classList.remove("hidden");
-        });
-    }
+	const closeBtnProfile = document.querySelector(".close-btn-profile");
+	 const editProfileModal = document.getElementById("edit-profile-modal");
+	 const openBtnProfile = document.querySelector(".edit-profile-btn");
+	 const tabPersonal = document.getElementById("tab-personal");
+	 const tabPassword = document.getElementById("tab-password");
+	 const personalForm = document.getElementById("edit-profile-form");
+	 const changePasswordForm = document.getElementById("change-password-form");
+	 
+	 // Open modal and load user data into form
+	 openBtnProfile.addEventListener("click", function () {
+	     editProfileModal.classList.remove("hidden");
+		 editProfileModal.classList.add("modal");
+	     fillEditForm();
+	 });
 
-    if (closeProfileModal && editProfileModal) {
-        closeProfileModal.addEventListener('click', function() {
-            editProfileModal.classList.add("hidden");
-        });
-    }
+	 // Close modal
+	 closeBtnProfile.addEventListener("click", function () {
+	     editProfileModal.classList.add("hidden");
+		 editProfileModal.classList.remove("modal");
+	 });
 
-    if (closePostModal && editPostModal) {
-        closePostModal.addEventListener('click', function() {
-            editPostModal.classList.remove('show');
-        });
-    }
+	 // Tab click handlers: Personal Details / Change Password
+	 tabPersonal.addEventListener("click", function () {
+	     tabPersonal.classList.add("active");
+	     tabPassword.classList.remove("active");
 
-    // Tab switching in edit profile modal
-    const tabPersonal = document.getElementById("tab-personal");
-    const tabPassword = document.getElementById("tab-password");
-    const personalForm = document.getElementById("edit-profile-form");
-    const changePasswordForm = document.getElementById("change-password-form");
+	     personalForm.classList.remove("hidden");
+	     changePasswordForm.classList.add("hidden");
+	 });
 
-    if (tabPersonal && tabPassword && personalForm && changePasswordForm) {
-        tabPersonal.addEventListener("click", function() {
-            tabPersonal.classList.add("active");
-            tabPassword.classList.remove("active");
-            personalForm.classList.remove("hidden");
-            changePasswordForm.classList.add("hidden");
-        });
+	 tabPassword.addEventListener("click", function () {
+	     tabPassword.classList.add("active");
+	     tabPersonal.classList.remove("active");
 
-        tabPassword.addEventListener("click", function() {
-            tabPassword.classList.add("active");
-            tabPersonal.classList.remove("active");
-            changePasswordForm.classList.remove("hidden");
-            personalForm.classList.add("hidden");
-        });
-    }
+	     changePasswordForm.classList.remove("hidden");
+	     personalForm.classList.add("hidden");
+	 });
 
+	
+	
+	
     // Profile image preview
     const profilePicInput = document.getElementById('edit-profile-picture');
     const profilePicPreview = document.getElementById('profile-picture-preview');
@@ -268,7 +264,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } catch (error) {
                 console.error("Submission error:", error);
                 showToast(error.message || "An error occurred", "error");
-            }
+            };
         });
-    }
+    };
 });

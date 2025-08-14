@@ -1,4 +1,4 @@
-<%@ page import="java.sql.*" %>
+<%@ page import="java.sql.*, utils.DBConnection" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
 // Check if user is already logged in
@@ -23,8 +23,8 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
         ResultSet rs = null;
         
         try {
-            Class.forName("oracle.jdbc.driver.OracleDriver");
-            conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "system", "a12345");
+            
+        	conn = DBConnection.getConnection();
             
             ps = conn.prepareStatement("SELECT * FROM users WHERE email = ?");
             ps.setString(1, email);
