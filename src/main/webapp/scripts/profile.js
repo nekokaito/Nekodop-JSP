@@ -1,260 +1,274 @@
-// Initialize after page loads
 document.addEventListener('DOMContentLoaded', function() {
-    // Show toast notification
+    // Toast notification
     showToast("Make sure phone number has WhatsApp", "info");
-    console.log('its working')
+    console.log('DOM loaded');
+
     // Section switching
-    document.getElementById('post-tab').addEventListener('click', function() {
-        showSection('post-section', 'post-tab');
-    });
+    const postTab = document.getElementById('post-tab');
+    const myCatsTab = document.getElementById('my-cats-tab');
     
-    document.getElementById('my-cats-tab').addEventListener('click', function() {
-        showSection('my-cats-section', 'my-cats-tab');
-    });
-    
-    function showSection(sectionId, tabId) {
-        document.getElementById("post-section").style.display = "none";
-        document.getElementById("my-cats-section").style.display = "none";
-        document.getElementById(sectionId).style.display = "block";
-        
-        var profileLinks = document.querySelectorAll('.profile-links li');
-        for (var i = 0; i < profileLinks.length; i++) {
-            profileLinks[i].classList.remove('active');
-        }
-        
-        document.getElementById(tabId).classList.add('active');
-    }
-    
-    // Modal functionality
-    var editProfileBtn = document.querySelector('.edit-profile-btn');
-    var editProfileModal = document.getElementById('edit-profile-modal');
-    var closeProfileModal = document.querySelector('.close-btn-profile');
-    var closePostModal = document.querySelector('.close-btn');
-    var editPostModal = document.getElementById('edit-post-modal');
-    
-    if (editProfileBtn) {
-        editProfileBtn.addEventListener('click', function() {
-           editProfileModal.classList.remove("hidden");
+    if (postTab && myCatsTab) {
+        postTab.addEventListener('click', function() {
+            showSection('post-section', 'post-tab');
+        });
+        myCatsTab.addEventListener('click', function() {
+            showSection('my-cats-section', 'my-cats-tab');
         });
     }
-    
-    if (closeProfileModal) {
+
+    function showSection(sectionId, tabId) {
+        const sections = ['post-section', 'my-cats-section'];
+        sections.forEach(function(id) {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        });
+
+        const activeSection = document.getElementById(sectionId);
+        if (activeSection) activeSection.style.display = 'block';
+
+        const profileLinks = document.querySelectorAll('.profile-links li');
+        profileLinks.forEach(function(link) {
+            link.classList.remove('active');
+        });
+        
+        const activeTab = document.getElementById(tabId);
+        if (activeTab) activeTab.classList.add('active');
+    }
+
+    // Modal functionality
+    const editProfileBtn = document.querySelector('.edit-profile-btn');
+    const editProfileModal = document.getElementById('edit-profile-modal');
+    const closeProfileModal = document.querySelector('.close-btn-profile');
+    const closePostModal = document.querySelector('.close-btn');
+    const editPostModal = document.getElementById('edit-post-modal');
+
+    if (editProfileBtn && editProfileModal) {
+        editProfileBtn.addEventListener('click', function() {
+            editProfileModal.classList.remove("hidden");
+        });
+    }
+
+    if (closeProfileModal && editProfileModal) {
         closeProfileModal.addEventListener('click', function() {
             editProfileModal.classList.add("hidden");
         });
     }
-    
-    if (closePostModal) {
+
+    if (closePostModal && editPostModal) {
         closePostModal.addEventListener('click', function() {
             editPostModal.classList.remove('show');
         });
     }
-    
+
     // Tab switching in edit profile modal
-	  const tabPersonal = document.getElementById("tab-personal");
-	  const tabPassword = document.getElementById("tab-password");
-	  const personalForm = document.getElementById("edit-profile-form");
-	  const changePasswordForm = document.getElementById("change-password-form");
-    
-	  tabPersonal.addEventListener("click", function() {
-	    tabPersonal.classList.add("active");
-	    tabPassword.classList.remove("active");
+    const tabPersonal = document.getElementById("tab-personal");
+    const tabPassword = document.getElementById("tab-password");
+    const personalForm = document.getElementById("edit-profile-form");
+    const changePasswordForm = document.getElementById("change-password-form");
 
-	    personalForm.classList.remove("hidden");
-	    changePasswordForm.classList.add("hidden");
-	  });
+    if (tabPersonal && tabPassword && personalForm && changePasswordForm) {
+        tabPersonal.addEventListener("click", function() {
+            tabPersonal.classList.add("active");
+            tabPassword.classList.remove("active");
+            personalForm.classList.remove("hidden");
+            changePasswordForm.classList.add("hidden");
+        });
 
-	  tabPassword.addEventListener("click", function() {
-	    tabPassword.classList.add("active");
-	    tabPersonal.classList.remove("active");
+        tabPassword.addEventListener("click", function() {
+            tabPassword.classList.add("active");
+            tabPersonal.classList.remove("active");
+            changePasswordForm.classList.remove("hidden");
+            personalForm.classList.add("hidden");
+        });
+    }
 
-	    changePasswordForm.classList.remove("hidden");
-	    personalForm.classList.add("hidden");
-	  });
-
-    
     // Profile image preview
-    var profilePicInput = document.getElementById('edit-profile-picture');
-    var profilePicPreview = document.getElementById('profile-picture-preview');
+    const profilePicInput = document.getElementById('edit-profile-picture');
+    const profilePicPreview = document.getElementById('profile-picture-preview');
     
-    if (profilePicInput) {
+    if (profilePicInput && profilePicPreview) {
         profilePicInput.addEventListener('change', function() {
             if (this.files && this.files[0]) {
-                var reader = new FileReader();
-                
+                const reader = new FileReader();
                 reader.onload = function(e) {
                     profilePicPreview.src = e.target.result;
                 };
-                
                 reader.readAsDataURL(this.files[0]);
             }
         });
     }
-    
+
     // Logout functionality
-    var logoutBtn = document.getElementById('logout-btn');
+    const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', function() {
             window.location.href = 'logout.jsp';
         });
     }
-    
+
     // Delete cat functionality
-    var deleteBtns = document.querySelectorAll('.delete-cat');
-    for (var i = 0; i < deleteBtns.length; i++) {
-        deleteBtns[i].addEventListener('click', function() {
-            var catCard = this.closest('.cat-card');
-            var catId = catCard.getAttribute('data-id');
-            var catName = catCard.querySelector('h3').textContent;
-            
-            if (confirm('Are you sure you want to delete "' + catName + '"?')) {
-                // Send delete request to server
-                var xhr = new XMLHttpRequest();
-                xhr.open('POST', 'delete-cat.jsp', true);
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState === 4) {
-                        if (xhr.status === 200) {
-                            try {
-                                var data = JSON.parse(xhr.responseText);
-                                if (data.success) {
-                                    showToast("Cat deleted successfully", "success");
-                                    catCard.parentNode.removeChild(catCard);
-                                } else {
-                                    showToast("Failed to delete cat", "error");
-                                }
-                            } catch (e) {
-                                showToast("Error parsing server response", "error");
-                            }
-                        } else {
-                            showToast("Error deleting cat", "error");
-                        }
+    const deleteBtns = document.querySelectorAll('.delete-cat');
+    deleteBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const catCard = this.closest('.cat-card');
+            if (!catCard) return;
+
+            const catId = catCard.dataset.id;
+            const catName = catCard.querySelector('h3');
+            const nameText = catName ? catName.textContent : 'this cat';
+
+            if (confirm('Are you sure you want to delete "' + nameText + '"?')) {
+                fetch('delete-cat.jsp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'id=' + encodeURIComponent(catId)
+                })
+                .then(function(res) {
+                    return res.json();
+                })
+                .then(function(data) {
+                    if (data.success) {
+                        showToast("Cat deleted successfully", "success");
+                        catCard.remove();
+                    } else {
+                        showToast(data.message || "Failed to delete cat", "error");
                     }
-                };
-                xhr.send('id=' + encodeURIComponent(catId));
+                })
+                .catch(function() {
+                    showToast("Network error", "error");
+                });
             }
         });
-    }
-    
+    });
+
     // Edit cat functionality
-    var editBtns = document.querySelectorAll('.edit-cat');
-    for (var j = 0; j < editBtns.length; j++) {
-        editBtns[j].addEventListener('click', function() {
-            var catCard = this.closest('.cat-card');
-            var catId = catCard.getAttribute('data-id');
+    const editBtns = document.querySelectorAll('.edit-cat');
+    editBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const catCard = this.closest('.cat-card');
+            if (!catCard || !editPostModal) return;
             
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', 'get-cat.jsp?id=' + encodeURIComponent(catId), true);
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        try {
-                            var cat = JSON.parse(xhr.responseText);
-                            document.getElementById('edit-cat-name').value = cat.name;
-                            // TODO: populate other fields here
-                            
-                            editPostModal.classList.add('show');
-                        } catch (e) {
-                            showToast("Error loading cat data", "error");
-                        }
-                    } else {
-                        showToast("Error loading cat data", "error");
-                    }
-                }
-            };
-            xhr.send();
+            const catId = catCard.dataset.id;
+            const catName = catCard.querySelector('h3');
+            const nameText = catName ? catName.textContent : '';
+            
+            document.getElementById('edit-cat-name').value = nameText;
+            editPostModal.classList.add('show');
+        });
+    });
+
+    // Cloudinary image upload
+    function uploadImageToCloudinary(file) {
+        return new Promise(function(resolve, reject) {
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("upload_preset", "nekodop");
+            formData.append("cloud_name", "dyvqe1hgj");
+
+            fetch("https://api.cloudinary.com/v1_1/dyvqe1hgj/image/upload", {
+                method: "POST",
+                body: formData
+            })
+            .then(function(res) {
+                if (!res.ok) throw new Error("Upload failed: " + res.status);
+                return res.json();
+            })
+            .then(function(data) {
+                resolve(data.secure_url);
+            })
+            .catch(function(error) {
+                console.error("Upload error:", error);
+                reject(new Error("Image upload failed"));
+            });
         });
     }
-    
+
     // Form submission handling
-    var postForm = document.getElementById('post-form');
+    const postForm = document.getElementById('post-form');
     if (postForm) {
-        postForm.addEventListener('submit', function(e) {
+        postForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            
-            var valid = true;
-            
-            // Clear errors
-            var errors = document.querySelectorAll('.error');
-            for (var k = 0; k < errors.length; k++) {
-                errors[k].textContent = '';
+            let isValid = true;
+
+            // Clear previous errors
+            const errors = document.querySelectorAll('.error');
+            errors.forEach(function(el) {
+                el.textContent = '';
+            });
+
+            // Validation helpers
+            function showError(fieldId, message) {
+                const errorEl = document.getElementById('error-' + fieldId);
+                if (errorEl) errorEl.textContent = message;
+                isValid = false;
             }
-            
-            // Cat name validation
-            var catName = document.getElementById('cat-name').value;
-            if (!catName) {
-                document.getElementById('error-cat-name').textContent = "Cat name is required";
-                valid = false;
-            }
-            
-            // Phone validation
-            var phone = document.getElementById('phone').value;
+
+            // Validate fields
+            const catNameEl = document.getElementById('cat-name');
+            const catName = catNameEl.value.trim();
+            if (!catName) showError('cat-name', "Cat name is required");
+
+            const phoneEl = document.getElementById('phone');
+            const phone = phoneEl.value.trim();
             if (!/^01\d{9}$/.test(phone)) {
-                document.getElementById('error-phone').textContent = 
-                    "Invalid phone number format. Must be 11 digits starting with 01.";
-                valid = false;
+                showError('phone', "Invalid format. 11 digits starting with 01");
             }
-            
-            // Year validation
-            var year = parseInt(document.getElementById('year').value, 10) || 0;
-            if (year < 0 || year > 25) {
-                document.getElementById('error-year').textContent = "Year must be between 0-25";
-                valid = false;
+
+            const yearEl = document.getElementById('year');
+            const year = parseInt(yearEl.value, 10);
+            if (isNaN(year) || year < 0 || year > 25) {
+                showError('year', "Must be between 0-25");
             }
-            
-            // Month validation
-            var month = parseInt(document.getElementById('month').value, 10) || 0;
-            if (month < 0 || month > 12) {
-                document.getElementById('error-month').textContent = "Month must be between 0-12";
-                valid = false;
+
+            const monthEl = document.getElementById('month');
+            const month = parseInt(monthEl.value, 10);
+            if (isNaN(month) || month < 0 || month > 12) {
+                showError('month', "Must be between 0-12");
             }
-            
-            // Image validation
-            var catImageInput = document.getElementById('cat-image');
-            var catImage = catImageInput.files.length > 0 ? catImageInput.files[0] : null;
-            if (!catImage) {
-                document.getElementById('error-image').textContent = "Please select an image";
-                valid = false;
-            }
-            
-            if (!valid) {
-                return;
-            }
-            
-            var formData = new FormData();
-            formData.append('cat-name', catName);
-            formData.append('year', year);
-            formData.append('month', month);
-            formData.append('gender', document.getElementById('gender').value);
-            formData.append('phone', phone);
-            formData.append('address', document.getElementById('address').value);
-            formData.append('additional', document.getElementById('additional').value);
-            formData.append('description', document.getElementById('description').value);
-            formData.append('cat-image', catImage);
-            formData.append('userId', '<%= userId %>');
-            
-            var xhrSubmit = new XMLHttpRequest();
-            xhrSubmit.open('POST', 'create-cat.jsp', true);
-            xhrSubmit.onreadystatechange = function() {
-                if (xhrSubmit.readyState === 4) {
-                    if (xhrSubmit.status === 200) {
-                        try {
-                            var data = JSON.parse(xhrSubmit.responseText);
-                            if (data.success) {
-                                showToast("Cat posted successfully!", "success");
-                                postForm.reset();
-                            } else {
-                                showToast("Failed to post cat: " + data.message, "error");
-                            }
-                        } catch (e) {
-                            showToast("Error parsing server response", "error");
-                        }
-                    } else {
-                        showToast("Error posting cat", "error");
-                    }
+
+            const catImageInput = document.getElementById('cat-image');
+            const catImage = catImageInput.files[0];
+            if (!catImage) showError('image', "Please select an image");
+
+            if (!isValid) return;
+
+            try {
+                // Upload image to Cloudinary
+                const imageUrl = await uploadImageToCloudinary(catImage);
+                
+                // Prepare form data with correct parameter names
+				const params = new URLSearchParams();
+				params.append('catName', catName);
+				params.append('year', year);
+				params.append('month', month);
+				params.append('catGender', document.getElementById('gender').value);
+				params.append('ownerPhone', phone);
+				params.append('ownerAddress', document.getElementById('address').value.trim());
+				params.append('additionalInfo', document.getElementById('additional').value.trim());
+				params.append('catDescription', document.getElementById('description').value.trim());
+				params.append('catImageUrl', imageUrl); // From Cloudinary
+
+				const response = await fetch('create-cat.jsp', {
+				  method: 'POST',
+				  headers: { 
+				    'Content-Type': 'application/x-www-form-urlencoded' // Correct header
+				  },
+				  body: params
+				});
+
+                // Handle response
+                const data = await response.json();
+				console.log(data)
+                if (data.success) {
+                    showToast("Posted successfully!", "success");
+                    postForm.reset();
+                } else {
+                    throw new Error(data.message || "Post failed");
                 }
-            };
-            xhrSubmit.send(formData);
+            } catch (error) {
+                console.error("Submission error:", error);
+                showToast(error.message || "An error occurred", "error");
+            }
         });
     }
 });
