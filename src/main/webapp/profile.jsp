@@ -452,10 +452,8 @@ try {
         </div>
     </footer>
     <script src="scripts/main.js"></script>
-    <script src="scripts/pre-loading.js"></script>
     <script src="scripts/toast.js"></script>
     <script src="https://kit.fontawesome.com/ef66a13064.js" crossorigin="anonymous"></script>
     <script src="scripts/profile.js"></script>
-    <script src="scripts/update-cat.js"></script>
 </body>
 </html>

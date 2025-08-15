@@ -5,12 +5,10 @@ document.addEventListener("DOMContentLoaded", function () {
   // Show Active Section (SPA)
   function showActiveSection() {
     var sections = document.querySelectorAll("#app > div");
-    console.log(sections);
-
+  
     var hash = window.location.hash;
-    console.log(hash);
-
-    // Set default hash
+	
+	    // Set default hash
     if (!hash) {
       var path = window.location.pathname;
 

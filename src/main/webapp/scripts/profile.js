@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Toast notification
     showToast("Make sure phone number has WhatsApp", "info");
-    console.log('DOM loaded');
+
 
     // Section switching
     const postTab = document.getElementById('post-tab');
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	 openBtnProfile.addEventListener("click", function () {
 	     editProfileModal.classList.remove("hidden");
 		 editProfileModal.classList.add("modal");
-	     fillEditForm();
+	     
 	 });
 
 	 // Close modal
@@ -75,12 +75,39 @@ document.addEventListener('DOMContentLoaded', function() {
 	     personalForm.classList.add("hidden");
 	 });
 
-	
+
+	 // Cloudinary image upload
+	 function uploadImageToCloudinary(file) {
+	     return new Promise(function(resolve, reject) {
+	         const formData = new FormData();
+	         formData.append("file", file);
+	         formData.append("upload_preset", "nekodop");
+	         formData.append("cloud_name", "dyvqe1hgj");
+
+	         fetch("https://api.cloudinary.com/v1_1/dyvqe1hgj/image/upload", {
+	             method: "POST",
+	             body: formData
+	         })
+	         .then(function(res) {
+	             if (!res.ok) throw new Error("Upload failed: " + res.status);
+	             return res.json();
+	         })
+	         .then(function(data) {
+	             resolve(data.secure_url);
+	         })
+	         .catch(function(error) {
+	             console.error("Upload error:", error);
+	             reject(new Error("Image upload failed"));
+	         });
+	     });
+	 }
+
 	
 	
     // Profile image preview
     const profilePicInput = document.getElementById('edit-profile-picture');
     const profilePicPreview = document.getElementById('profile-picture-preview');
+	const editForm = document.getElementById("edit-profile-form");
     
     if (profilePicInput && profilePicPreview) {
         profilePicInput.addEventListener('change', function() {
@@ -93,6 +120,67 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+	
+	
+	
+	editForm.addEventListener("submit", async (e) => {
+	    e.preventDefault();
+
+	    const name = document.getElementById("edit-name").value.trim();
+	    const email = document.getElementById("edit-email").value.trim();
+	    const file = profilePicInput.files[0];
+
+	    let profilePictureUrl = profilePicPreview.src;
+
+		if (file) {
+		        try {
+		            profilePictureUrl = await uploadImageToCloudinary(file); 
+		        } catch (err) {
+		            alert("Image upload failed.");
+		            return;
+		        }
+		    }
+
+	    // Send data as params
+	    const params = new URLSearchParams({
+	        name: name,
+	        email: email,
+	        profilePicture: profilePictureUrl
+	    });
+
+	    try {
+	        const res = await fetch("update-user.jsp", {
+			    method: "POST",
+			    headers: { "Content-Type": "application/json" },
+			    body: JSON.stringify({
+			        name: name,
+			        email: email,
+			        profilePicture: profilePictureUrl
+			    })
+			});
+	        const data = await res.json();
+	        if (data.success) {
+	             showToast("Profile updated successfully.", "success");
+				
+				setTimeout(function() {
+				        location.reload();
+				    }, 3000);
+	        } else {
+	            alert();
+				showToast(data.error || "Failed to update profile.", "");
+	        }
+	    } catch (err) {
+	        console.error(err);
+			showToast(
+			        err.message || "Something went wrong while updating user.",
+			        "error"
+			      );
+	    }
+	});
+
+	
+	
+	
 
     // Logout functionality
     const logoutBtn = document.getElementById('logout-btn');
@@ -200,31 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	
 	
 
-    // Cloudinary image upload
-    function uploadImageToCloudinary(file) {
-        return new Promise(function(resolve, reject) {
-            const formData = new FormData();
-            formData.append("file", file);
-            formData.append("upload_preset", "nekodop");
-            formData.append("cloud_name", "dyvqe1hgj");
-
-            fetch("https://api.cloudinary.com/v1_1/dyvqe1hgj/image/upload", {
-                method: "POST",
-                body: formData
-            })
-            .then(function(res) {
-                if (!res.ok) throw new Error("Upload failed: " + res.status);
-                return res.json();
-            })
-            .then(function(data) {
-                resolve(data.secure_url);
-            })
-            .catch(function(error) {
-                console.error("Upload error:", error);
-                reject(new Error("Image upload failed"));
-            });
-        });
-    }
+	
 
     // Form submission handling
     const postForm = document.getElementById('post-form');
