@@ -26,9 +26,9 @@ String createdAtStr = (String) session.getAttribute("createdAt");
 Timestamp createdAt = null;
 if (createdAtStr != null && !createdAtStr.isEmpty()) {
     try {
-        createdAt = Timestamp.valueOf(createdAtStr); // must be yyyy-MM-dd HH:mm:ss format
+        createdAt = Timestamp.valueOf(createdAtStr); 
     } catch (IllegalArgumentException e) {
-        // If stored format is invalid, skip parsing
+        
     }
 }
 
@@ -455,5 +455,6 @@ try {
     <script src="scripts/toast.js"></script>
     <script src="https://kit.fontawesome.com/ef66a13064.js" crossorigin="anonymous"></script>
     <script src="scripts/profile.js"></script>
+    <script src="scripts/user-nav.js"></script>
 </body>
 </html>

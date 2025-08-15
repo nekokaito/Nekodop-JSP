@@ -179,6 +179,115 @@ document.addEventListener('DOMContentLoaded', function() {
 	});
 
 	
+       // Change Password
+
+	  changePasswordForm.addEventListener("submit", async function(e) {
+	    e.preventDefault();
+
+	    // Clear previous error messages
+	    document.getElementById("current-password-error").textContent = "";
+	    document.getElementById("new-password-error").textContent = "";
+	    document.getElementById("confirm-password-error").textContent = "";
+
+	    // Get input values
+	    const currentPassword = document.getElementById("current-password").value.trim();
+	    const newPassword = document.getElementById("new-password").value.trim();
+	    const confirmPassword = document.getElementById("confirm-password").value.trim();
+
+	    // Client-side validation
+	    if (!currentPassword) {
+	      document.getElementById("current-password-error").textContent = "Current password is required";
+	      return;
+	    }
+
+	    const validation = validatePassword(newPassword);
+	    if (!validation.isValid) {
+	      document.getElementById("new-password-error").textContent = validation.error;
+	      return;
+	    }
+
+	    if (newPassword !== confirmPassword) {
+	      document.getElementById("confirm-password-error").textContent = "New passwords do not match!";
+	      return;
+	    }
+
+	    try {
+	      // Send request to JSP endpoint
+	      const res = await fetch('update-password.jsp', {
+	        method: "POST",
+	        headers: { 
+	          "Content-Type": "application/x-www-form-urlencoded",
+	        },
+	        body: new URLSearchParams({
+	          currentPassword: currentPassword,
+	          newPassword: newPassword
+	        })
+	      });
+
+	      const result = await res.text();
+	      let data;
+	      
+	      try {
+	        data = JSON.parse(result);
+	      } catch (e) {
+	        console.error("JSON parse error:", e);
+	        showToast("Invalid server response", "error");
+	        return;
+	      }
+
+	      // Handle response
+	      if (res.status === 401) {
+	        document.getElementById("current-password-error").textContent = 
+	          data.error || "Current password is incorrect!";
+	        return;
+	      }
+
+	      if (res.status === 400) {
+	        document.getElementById("new-password-error").textContent = 
+	          data.error || "Invalid new password format";
+	        return;
+	      }
+
+	      if (res.ok) {
+	        showToast("Password updated successfully!", "success");
+	        changePasswordForm.reset();
+	        document.getElementById("edit-profile-modal").classList.add("hidden");
+			setTimeout(function() {
+			location.reload(); }, 3000);
+	      } else {
+	        showToast(data.error || "Password update failed", "error");
+	      }
+	    } catch (err) {
+	      console.error("Password update error:", err);
+	      showToast("Network error: " + err.message, "error");
+	    }
+	  });
+
+	// Password validation function
+	function validatePassword(password) {
+	  if (!password) return { isValid: false, error: "Password is required" };
+	  
+	  const errors = [];
+	  
+	  if (password.length < 8) 
+	    errors.push("at least 8 characters");
+	  if (!/[A-Z]/.test(password)) 
+	    errors.push("one uppercase letter");
+	  if (!/[a-z]/.test(password)) 
+	    errors.push("one lowercase letter");
+	  if (!/\d/.test(password)) 
+	    errors.push("one digit");
+	  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) 
+	    errors.push("one special character");
+
+	  return errors.length === 0 
+	    ? { isValid: true } 
+	    : { 
+	        isValid: false, 
+	        error: "Password must contain: " + errors.join(", ")
+	      };
+	}
+
 	
 	
 
@@ -369,6 +478,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.success) {
                     showToast("Posted successfully!", "success");
                     postForm.reset();
+					setTimeout(function() {
+				    location.reload(); }, 3000);
                 } else {
                     throw new Error(data.message || "Post failed");
                 }
