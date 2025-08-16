@@ -8,6 +8,9 @@ response.setContentType("application/json");
 boolean success = false;
 String message = "";
 String userId = (String) session.getAttribute("userId");
+String userName = (String)  session.getAttribute("userName");
+String userEmail = (String) session.getAttribute("userEmail");
+String userProfilePicture = (String) session.getAttribute("userProfilePicture");
 
 // Check user session
 if (userId == null) {
@@ -54,7 +57,7 @@ if (month > 0) {
 if (catAge.isEmpty()) catAge = "0 months";
 
     // Prepare SQL
-    String sql = "INSERT INTO cats (id, cat_owner_id, cat_name, cat_image, cat_age, cat_gender, cat_description, owner_phone, owner_address, additional_information) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    String sql = "INSERT INTO cats (id, cat_owner_id, cat_name, cat_image, cat_age, cat_gender, cat_description, owner_phone, owner_address, additional_information, owner_name, owner_email, owner_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     PreparedStatement ps = conn.prepareStatement(sql);
     
     // Set parameters
@@ -68,6 +71,9 @@ if (catAge.isEmpty()) catAge = "0 months";
     ps.setString(8, phone != null ? phone : "");
     ps.setString(9, ownerAddress != null ? ownerAddress : "");
     ps.setString(10, additionalInfo != null ? additionalInfo : "");
+    ps.setString(11, userName);
+    ps.setString(12, userEmail);
+    ps.setString(13, userProfilePicture);
 
     // Execute and check result
     int rows = ps.executeUpdate();
