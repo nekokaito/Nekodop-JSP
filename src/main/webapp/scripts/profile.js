@@ -367,10 +367,10 @@ document.addEventListener('DOMContentLoaded', function() {
 	  try {
 	    const res = await fetch(`get-cat.jsp?id=${catId}`);
 	    const cat = await res.json();
-        console.log(cat)
 	    
 
 	    // fill form fields with old values
+		document.getElementById("edit-cat-id").value = catId
 	    document.getElementById("edit-cat-name").value = cat.name;
 
 	    // split age into year/month
@@ -395,11 +395,103 @@ document.addEventListener('DOMContentLoaded', function() {
 	  }
 	}
 	
-	
+	//update cat
+    
+	const updateForm = document.getElementById('edit-post-form');
+	if (updateForm) {
+	    updateForm.addEventListener('submit', async function(e) {
+	        e.preventDefault();
+	        let isValid = true;
+			console.log("Submit prevented!");
+	        // Clear previous errors
+	        const errors = document.querySelectorAll('.error');
+	        errors.forEach(function(el) {
+	            el.textContent = '';
+	        });
+
+	        // Validation helper
+	        function showError(fieldId, message) {
+	            const errorEl = document.getElementById('edit-error-' + fieldId);
+	            if (errorEl) errorEl.textContent = message;
+	            isValid = false;
+	        }
+
+	        // Validate fields
+	        const catNameEl = document.getElementById('edit-cat-name');
+	        const catName = catNameEl.value.trim();
+	        if (!catName) showError('cat-name', "Cat name is required");
+
+	        const phoneEl = document.getElementById('edit-phone');
+	        const phone = phoneEl.value.trim();
+	        if (!/^01\d{9}$/.test(phone)) {
+	            showError('phone', "Invalid format. 11 digits starting with 01");
+	        }
+
+	        const yearEl = document.getElementById('edit-year');
+	        const year = parseInt(yearEl.value, 10);
+	        if (isNaN(year) || year < 0 || year > 25) {
+	            showError('year', "Must be between 0-25");
+	        }
+
+	        const monthEl = document.getElementById('edit-month');
+	        const month = parseInt(monthEl.value, 10);
+	        if (isNaN(month) || month < 0 || month > 12) {
+	            showError('month', "Must be between 0-12");
+	        }
+
+	        if (!isValid) return;
+
+	        // image handling
+	        const currentImage = document.getElementById('edit-cat-image-current').value;
+	        const catImageInput = document.getElementById('edit-cat-image-new');
+	        const newImageFile = catImageInput.files[0];
+
+	        let imageUrl = currentImage; 
+	        try {
+	            if (newImageFile) {
+	                // upload new image 
+	                imageUrl = await uploadImageToCloudinary(newImageFile);
+	            }
+				
+	            // Prepare form data
+	            const params = new URLSearchParams();
+				params.append('catId', document.getElementById("edit-cat-id").value);
+	            params.append('catName', catName);
+	            params.append('year', year);
+	            params.append('month', month);
+	            params.append('catGender', document.getElementById('edit-gender').value);
+	            params.append('adoptStatus', document.getElementById('edit-status').value);
+	            params.append('ownerPhone', phone);
+	            params.append('ownerAddress', document.getElementById('edit-address').value.trim());
+	            params.append('additionalInfo', document.getElementById('edit-additional').value.trim());
+	            params.append('catDescription', document.getElementById('edit-description').value.trim());
+	            params.append('catImageUrl', imageUrl);
+
+	            // send update request
+	            const response = await fetch('update-cat.jsp', {
+	                method: 'POST',
+	                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+	                body: params
+	            });
+
+	            const data = await response.json();
+	            if (data.success) {
+	                showToast("Updated successfully!", "success");
+	                setTimeout(function() {
+	                    location.reload();
+	                }, 2000);
+	            } else {
+	                throw new Error(data.message || "Update failed");
+	            }
+	        } catch (error) {
+	            console.error("Submission error:", error);
+	            showToast(error.message || "An error occurred", "error");
+	        }
+	    });
+	}
 
 	
-
-    // Form submission handling
+    // Post Cat
     const postForm = document.getElementById('post-form');
     if (postForm) {
         postForm.addEventListener('submit', async function(e) {
@@ -467,7 +559,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				const response = await fetch('create-cat.jsp', {
 				  method: 'POST',
 				  headers: { 
-				    'Content-Type': 'application/x-www-form-urlencoded' // Correct header
+				    'Content-Type': 'application/x-www-form-urlencoded' 
 				  },
 				  body: params
 				});

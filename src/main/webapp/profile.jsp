@@ -374,6 +374,7 @@ try {
                             <form id="edit-post-form">
                                 <div class="form-group">
                                     <label for="edit-cat-name">Cat Name</label>
+                                    <input type="hidden" id="edit-cat-id" name="catId"> 
                                     <input type="text" id="edit-cat-name" required />
                                     <span class="error" id="edit-error-cat-name"></span>
                                 </div>
