@@ -13,18 +13,34 @@
         String password = request.getParameter("password");
         String rePassword = request.getParameter("re-password");
         String profilePhotoUrl = request.getParameter("profilePhotoUrl");
-        
+
+        // ==== backend password validation ====
+        String passwordError = null;
+        if (password == null || password.trim().length() < 8) {
+            passwordError = "Password must be at least 8 characters long.";
+        } else if (!password.matches(".*[A-Z].*")) {
+            passwordError = "Password must contain at least one uppercase letter.";
+        } else if (!password.matches(".*[a-z].*")) {
+            passwordError = "Password must contain at least one lowercase letter.";
+        } else if (!password.matches(".*\\d.*")) {
+            passwordError = "Password must contain at least one digit.";
+        } else if (!password.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
+            passwordError = "Password must contain at least one special character.";
+        }
+
         if (name == null || email == null || password == null || rePassword == null ||
             name.trim().isEmpty() || email.trim().isEmpty() || password.isEmpty() || rePassword.isEmpty()) {
             message = "All fields are required!";
         } else if (!password.equals(rePassword)) {
             message = "Passwords do not match!";
+        } else if (passwordError != null) {
+            message = passwordError;
         } else {
             Connection conn = null;
             PreparedStatement ps = null;
             ResultSet rs = null;
             try {
-               conn = DBConnection.getConnection();
+                conn = DBConnection.getConnection();
 
                 // Check if email already exists
                 ps = conn.prepareStatement("SELECT COUNT(*) FROM users WHERE email = ?");
@@ -38,26 +54,43 @@
                     if (ps != null) ps.close();
 
                     // Insert user data
-                    ps = conn.prepareStatement("INSERT INTO users (id, name, email, password, profile_picture, user_role, created_at) VALUES (?, ?, ?, ?, ?, 'user', CURRENT_TIMESTAMP)");
+                    ps = conn.prepareStatement(
+                        "INSERT INTO users (id, name, email, password, profile_picture, user_role, created_at) " +
+                        "VALUES (?, ?, ?, ?, ?, 'user', CURRENT_TIMESTAMP)"
+                    );
                     ps.setString(1, userId);
                     ps.setString(2, name);
                     ps.setString(3, email);
-                    ps.setString(4, password);
-                    
+                    ps.setString(4, password); 
                     if (profilePhotoUrl == null || profilePhotoUrl.trim().isEmpty()) {
                         ps.setNull(5, java.sql.Types.VARCHAR);
                     } else {
                         ps.setString(5, profilePhotoUrl);
                     }
-                    
+
                     int inserted = ps.executeUpdate();
-                    
+
                     if (inserted > 0) {
+                        // query back inserted data
+                        if (ps != null) ps.close();
+                        ps = conn.prepareStatement("SELECT user_role, created_at FROM users WHERE id = ?");
+                        ps.setString(1, userId);
+                        rs = ps.executeQuery();
+
+                        String userRole = "user";
+                        String createdAt = "";
+                        if (rs.next()) {
+                            userRole = rs.getString("user_role");
+                            createdAt = rs.getString("created_at");
+                        }
+
                         // Save user info in session
                         session.setAttribute("userId", userId);
                         session.setAttribute("userName", name);
                         session.setAttribute("userEmail", email);
                         session.setAttribute("userProfilePicture", profilePhotoUrl);
+                        session.setAttribute("userRole", userRole);
+                        session.setAttribute("createdAt", createdAt);
 
                         registrationSuccess = true;
                         message = "Registration successful!";
@@ -137,8 +170,7 @@
             <label for="re-password">Re-Password</label>
             <input type="password" id="re-password" name="re-password" autocomplete="new-password" required />
           </div>
-          
-          <button type="submit">Submit</button>
+           <button type="submit">Submit</button>
           <span class="form-footer">
             <p>
               Already Have an Account?
@@ -147,11 +179,7 @@
           </span>
         </form>
       </section>
-      <% if (message != null) { %>
-        <div style="color: <%= message.contains("successful") ? "green" : "red" %>; margin: 1rem auto; text-align: center;">
-          <%= message %>
-        </div>
-      <% } %>
+     
       <section class="content-section">
         <div class="content">
           <div class="illustration">
@@ -172,6 +200,7 @@
     </div>
     <script src="scripts/toast.js"></script>
     <script>
+      // === Cloudinary upload ===
       document.getElementById("profile-photo").addEventListener("change", async function() {
           const file = this.files[0];
           if (!file) return;
@@ -197,7 +226,50 @@
               alert("Failed to upload image");
           }
       });
-      
+
+      // === Password validation (frontend) ===
+      const validatePassword = (password) => {
+        password = password.trim(); 
+        let error = null;
+
+        if (password.length < 8) {
+          error = "Password must be at least 8 characters long.";
+        } else if (!/[A-Z]/.test(password)) {
+          error = "Password must contain at least one uppercase letter.";
+        } else if (!/[a-z]/.test(password)) {
+          error = "Password must contain at least one lowercase letter.";
+        } else if (!/\d/.test(password)) {
+          error = "Password must contain at least one digit.";
+        } else if (!/[!@#$%^&*(),.?\":{}|<>]/.test(password)) {
+          error = "Password must contain at least one special character.";
+        }
+
+        return {
+          isValid: error === null,
+          error,
+        };
+      };
+
+      document.getElementById("signup-form").addEventListener("submit", function (e) {
+        const password = document.getElementById("password").value;
+        const rePassword = document.getElementById("re-password").value;
+
+        const { isValid, error } = validatePassword(password);
+
+        if (!isValid) {
+          e.preventDefault();
+          
+          showToast(error, "error");
+          return;
+        }
+
+        if (password !== rePassword) {
+          e.preventDefault();
+          showToast("Passwords do not match!", "error");
+          return;
+        }
+      });
+
       <% if (message != null) { %>
         window.onload = function() {
           showToast("<%= message %>", "<%= registrationSuccess ? "success" : "error" %>");
