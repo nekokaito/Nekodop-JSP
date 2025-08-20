@@ -12,7 +12,7 @@
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         String rePassword = request.getParameter("re-password");
-        String profilePhotoUrl = request.getParameter("profilePhotoUrl");
+        String profilePhotoUrl = request.getParameter("profilePhotoUrl");  
 
         // ==== backend password validation ====
         String passwordError = null;
