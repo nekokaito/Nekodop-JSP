@@ -10,18 +10,18 @@
       content="upgrade-insecure-requests"
     />
     <title>Dashboard - Nekodop</title>
-    <link rel="icon" href="/images/NekoDopLogoAlt.png" type="image/x-icon" />
-    <link rel="stylesheet" href="/styles/global.css" />
-    <link rel="stylesheet" href="/styles/dashboard.css" />
-    <link rel="stylesheet" href="/styles/table.css" />
-    <link rel="stylesheet" href="/styles/toast.css" />
-    <link rel="stylesheet" href="/styles/navbar.css" />
-    <link rel="stylesheet" href="/styles/footer.css" />
-    <link rel="stylesheet" href="/styles/form.css" />
-    <link rel="stylesheet" href="/styles/card.css" />
-    <link rel="stylesheet" href="/styles/preloader.css" />
-    <link rel="stylesheet" href="/styles/profile.css" />
-    <link rel="stylesheet" href="/styles/feature.css" />
+    <link rel="icon" href="images/NekoDopLogoAlt.png" type="image/x-icon" />
+    <link rel="stylesheet" href="styles/global.css" />
+    <link rel="stylesheet" href="styles/dashboard.css" />
+    <link rel="stylesheet" href="styles/table.css" />
+    <link rel="stylesheet" href="styles/toast.css" />
+    <link rel="stylesheet" href="styles/navbar.css" />
+    <link rel="stylesheet" href="styles/footer.css" />
+    <link rel="stylesheet" href="styles/form.css" />
+    <link rel="stylesheet" href="styles/card.css" />
+    <link rel="stylesheet" href="styles/preloader.css" />
+    <link rel="stylesheet" href="styles/profile.css" />
+    <link rel="stylesheet" href="styles/feature.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -33,7 +33,7 @@
   <body>
     <!-- Preloader -->
     <div id="preloader" class="preloader">
-      <img src="/images/preloader.gif" alt="" />
+      <img src="images/preloader.gif" alt="" />
     </div>
 
     <main id="main-content">
@@ -50,14 +50,14 @@
           <li><a href="#posts">Posts</a></li>
 
           <li class="login-phn">
-            <a href="/pages/login.html"
+            <a href="pages/login.html"
               ><button class="login-btn">Login</button></a
             >
           </li>
         </ul>
 
         <div class="user-nav">
-          <a href="/pages/login.html">
+          <a href="pages/login.html">
             <button class="login-btn login-desktop">Login</button>
           </a>
         </div>
@@ -100,7 +100,7 @@
                   <p id=""><i class="fa-solid fa-file"></i></p>
                 </div>
               </a>
-              <a href="/pages/profile.html">
+              <a href="pages/profile.html">
                 <div class="counter-item">
                   <h3>Profile</h3>
                   <p id=""><i class="fa-solid fa-user"></i></p>
@@ -227,10 +227,9 @@
     src="https://kit.fontawesome.com/ef66a13064.js"
     crossorigin="anonymous"
   ></script>
-  <script src="/scripts/reponsive.js"></script>
-  <script type="module" src="/scripts/main.js"></script>
-  <script type="module" src="/scripts/auth/user-nav.js"></script>
-  <script type="module" src="/scripts/dashboard/dashboard.js"></script>
-  <script src="/scripts/toast.js"></script>
-  <script src="/scripts/dashboard/update-time.js"></script>
+  <script src="scripts/reponsive.js"></script>
+  <script  src="scripts/main.js"></script>
+  <script src="scripts/user-nav.js"></script>
+  <script src="scripts/toast.js"></script>
+  
 </html>

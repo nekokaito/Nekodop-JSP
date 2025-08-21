@@ -12,7 +12,6 @@ String userProfilePicture = (String) session.getAttribute("userProfilePicture");
 String userRole = (String) session.getAttribute("userRole");
 boolean isAdmin = "admin".equals(userRole);
 
-
 %>
 <!DOCTYPE html>
 <html lang="en">

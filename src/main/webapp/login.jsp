@@ -89,7 +89,7 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
 <body class="login-body">
     <div id="toast-container"></div>
     <div class="back">
-      <a href="/">
+      <a href="index.jsp">
         <div class="back-home">
           <i class="fa-solid fa-house-chimney"></i>
         </div>
