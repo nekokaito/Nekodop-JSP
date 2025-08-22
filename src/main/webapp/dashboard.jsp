@@ -1,5 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    
+<%
+// Check if user is logged in
+String userId = (String) session.getAttribute("userId");
+String userName = (String) session.getAttribute("userName");
+String userProfilePicture = (String) session.getAttribute("userProfilePicture");
+String userRole = (String) session.getAttribute("userRole");
+boolean isAdmin = "admin".equals(userRole);
+
+%>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -12,7 +22,7 @@
     <title>Dashboard - Nekodop</title>
     <link rel="icon" href="images/NekoDopLogoAlt.png" type="image/x-icon" />
     <link rel="stylesheet" href="styles/global.css" />
-    <link rel="stylesheet" href="styles/dashboard.css" />
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/styles/dashboard.css">
     <link rel="stylesheet" href="styles/table.css" />
     <link rel="stylesheet" href="styles/toast.css" />
     <link rel="stylesheet" href="styles/navbar.css" />
@@ -39,7 +49,7 @@
     <main id="main-content">
       <nav class="navbar">
         <div class="logo-div">
-          <a href="/" class="logo">Nekodop</a>
+          <a href="index.jsp" class="logo">Nekodop</a>
         </div>
 
         <ul class="nav-links">
@@ -49,18 +59,34 @@
           </li>
           <li><a href="#posts">Posts</a></li>
 
-          <li class="login-phn">
-            <a href="pages/login.html"
-              ><button class="login-btn">Login</button></a
-            >
-          </li>
-        </ul>
+           <% if (userId == null) { %>
+                    <li class="login-phn">
+                        <a href="login.jsp"><button class="login-btn">Login</button></a>
+                    </li>
+                <% } %>
+            </ul>
 
-        <div class="user-nav">
-          <a href="pages/login.html">
-            <button class="login-btn login-desktop">Login</button>
-          </a>
-        </div>
+            <div class="user-nav">
+                <% if (userId == null) { %>
+                    <a href="login.jsp">
+                        <button class="login-btn login-desktop">Login</button>
+                    </a>
+                <% } else { %>
+                    <div class="user-menu">
+                        <div class="user-icon">
+                            <img src="<%= userProfilePicture != null ? userProfilePicture : "images/profile.png" %>" 
+                                 alt="User" class="profile-img" />
+                        </div>
+                        <ul class="dropdown-menu">
+                            <li><a href="profile.jsp"><i class="fa-regular fa-circle-user"></i> My Profile</a></li>
+                            <% if (isAdmin) { %>
+                                <li><a href="dashboard.jsp"><i class="fa-solid fa-calendar"></i> Dashboard</a></li>
+                            <% } %>
+                            <li><button id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button></li>
+                        </ul>
+                    </div>
+                <% } %>
+            </div>
         <button class="hamburger">
           <span></span>
           <span></span>
@@ -71,7 +97,7 @@
       <div id="app" class="container">
         <!-- Dashboard Section -->
         <div id="dashboard" class="dashboard">
-          <div class="dashboard-header">
+         <div style="background-image: url('images/bg-d.jpg');" class="dashboard-header">
             <div class="hero">
               <h1 class="hero-title">Welcome to Dashboard</h1>
               <div class="time-section">
@@ -82,7 +108,7 @@
               </div>
             </div>
             <div class="dashboard-menu">
-              <a href="/">
+              <a href="index.jsp">
                 <div class="counter-item">
                   <h3>Home</h3>
                   <p id=""><i class="fa-solid fa-house"></i></p>
@@ -203,7 +229,7 @@
       <div class="footer-logo">
         <img
           class="footer-logo-img"
-          src="/images/NekoDopLogo.png"
+          src="images/NekoDopLogo.png"
           alt="Nekodop Logo"
         />
       </div>
@@ -229,7 +255,8 @@
   ></script>
   <script src="scripts/reponsive.js"></script>
   <script  src="scripts/main.js"></script>
-  <script src="scripts/user-nav.js"></script>
   <script src="scripts/toast.js"></script>
+  <script src="scripts/dashboard.js"></script>
+  <script src="scripts/user-nav.js"></script>
   
 </html>
