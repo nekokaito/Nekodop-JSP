@@ -136,12 +136,12 @@ boolean isAdmin = "admin".equals(userRole);
             <div class="user-profile">
               <img
                 id="dashboard-profile-picture"
-                src=""
+                src="<%= userProfilePicture != null ? userProfilePicture : "images/profile.png" %>"
                 alt="User Profile"
                 class="profile-picture"
               />
               <div class="user-info">
-                <h3 id="dashboard-username">John Doe</h3>
+                <h3 id="dashboard-username"><% out.print(userName); %></h3>
                 <p>Administrator</p>
               </div>
             </div>
