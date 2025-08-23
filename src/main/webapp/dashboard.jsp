@@ -150,19 +150,19 @@ boolean isAdmin = "admin".equals(userRole);
           <div class="dashboard-counters">
             <div class="counter-item">
               <h3>Total Users</h3>
-              <p id="total-users">1,247</p>
+              <p id="total-users">0</p>
             </div>
             <div class="counter-item">
               <h3>Approved Posts</h3>
-              <p id="approved-count">856</p>
+              <p id="approved-count">0</p>
             </div>
             <div class="counter-item">
               <h3>Pending Posts</h3>
-              <p id="pending-count">23</p>
+              <p id="pending-count">0</p>
             </div>
             <div class="counter-item">
               <h3>Rejected Posts</h3>
-              <p id="rejected-count">12</p>
+              <p id="rejected-count">0</p>
             </div>
           </div>
         </div>

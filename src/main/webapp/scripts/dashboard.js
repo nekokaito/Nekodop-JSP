@@ -109,7 +109,152 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error("Error fetching users:", error);
       });
   }
+  
+  
+  
+  var allCats = [];
+
+  // fetch all cats from jsp
+  function fetchPosts() {
+    return fetch("get-cats.jsp") 
+      .then(function (res) {
+        return res.json();
+      })
+      .then(function (data) {
+        // your jsp directly returns an array []
+        allCats = data || [];
+        return allCats;
+      })
+      .catch(function (error) {
+        console.error("Error fetching posts:", error);
+        return [];
+      });
+  }
+
+  // filter cats by approval status
+  function filterCats(status) {
+    switch (status) {
+      case "approved":
+        return allCats.filter(function (cat) {
+          return cat.status === "1";
+        });
+      case "pending":
+        return allCats.filter(function (cat) {
+          return cat.status === "0";
+        });
+      case "rejected":
+        return allCats.filter(function (cat) {
+          return cat.status === "2";
+        });
+      default:
+        return allCats;
+    }
+  }
+
+  // setup filter and refresh functionality
+  function setupPostActions() {
+    var refreshBtn = document.getElementById("refresh-posts");
+    var filterSelect = document.getElementById("filter");
+
+    if (!refreshBtn || !filterSelect) {
+      console.warn("Post filter or refresh elements not found.");
+      return;
+    }
+
+    // filter change
+    filterSelect.addEventListener("change", function () {
+      var selected = filterSelect.value;
+      var filtered = filterCats(selected);
+      renderPosts(filtered);
+    });
+
+    // refresh click
+    refreshBtn.addEventListener("click", function () {
+      fetchPosts().then(function () {
+        var selected = filterSelect.value;
+        var filtered = filterCats(selected);
+        renderPosts(filtered);
+      });
+    });
+  }
+
+  // render posts
+  function renderPosts(catList) {
+    var container = document.getElementById("post-container");
+
+    // clear
+    container.innerHTML = "";
+
+    if (!catList || catList.length === 0) {
+      container.style.height = "100vh";
+      container.innerHTML =
+        "<div class='no-cats'>" +
+        "<img src='images/No_Cats.png' alt='No Cats Found' />" +
+        "<p>No Cat Posts Found.</p>" +
+        "</div>";
+      return;
+    }
+
+    container.style.height = "auto";
+
+    catList.forEach(function (cat) {
+      // optimize cloudinary url
+      var optimizedImage = cat.image.replace(
+        "/upload/",
+        "/upload/f_webp,q_40/"
+      );
+
+      var card = document.createElement("a");
+      card.href = "cat-details.jsp?id=" + cat.id;
+      card.className = "card";
+      card.innerHTML = 	  `
+	        <div class="cat-img">
+	          <img src="${optimizedImage}" alt="${cat.name}" loading="lazy" />
+	        </div>
+	        <div class="card-body">
+	          <div class="card-text">
+	            <h2>${cat.name}</h2>
+	            <p>${cat.age.replace(/^0 years\s*/, "")}</p>
+	            <p>${cat.gender}</p>
+	          </div>
+	          <div class="owner-img">
+	            <img id="owner-${cat.id}" src="${cat.ownerImage}" alt="Owner of ${
+	        cat.cat_name
+	      }" loading="lazy" />
+	          </div>
+	        </div>
+	      `;;
+
+      container.appendChild(card);
+
+    
+      
+    });
+  }
+
+  // run when page ready
+
   updateTime();
   setInterval(updateTime, 1000);
   loadUsers();
+  fetchPosts().then(function () {
+        setupPostActions();
+
+        var initialFilter = document.getElementById("filter")
+          ? document.getElementById("filter").value
+          : "all";
+
+        var filtered = filterCats(initialFilter);
+        renderPosts(filtered);
+
+        // counters
+        var approvedCount = filterCats("approved").length;
+        var pendingCount = filterCats("pending").length;
+        var rejectedCount = filterCats("rejected").length;
+
+        document.getElementById("approved-count").textContent = approvedCount;
+        document.getElementById("pending-count").textContent = pendingCount;
+        document.getElementById("rejected-count").textContent = rejectedCount;
+      });
+
 });
