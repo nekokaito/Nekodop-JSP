@@ -97,7 +97,7 @@ if (userId == null) {
                 <span></span>
             </button>
         </nav>
-    
+    <div id="toast-container"></div>
     <div class="cat-details">
         <div id="nav-home" class="nav-home">
           <a href="index.jsp#explore" class="return-btn">

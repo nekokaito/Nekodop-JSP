@@ -1,4 +1,8 @@
+document.addEventListener('DOMContentLoaded', function () {
+
 async function fetchCatDetails() {
+
+	
     let params = new URLSearchParams(window.location.search);
     let catId = params.get("id");
     
@@ -105,19 +109,17 @@ async function fetchCatDetails() {
 		    	                       
 		    	                         ${
 		    	                        	 isAdmin
-		    	                             ? ` <button data-id="${
-		    	                                 cat.id
-		    	                               }" class="approve-button" ${
-		    	                                 cat.status === 1
-		    	                                   ? "disabled style='opacity:0.6;cursor:not-allowed; background-color: #d1d1d1ff;'"
-		    	                                   : ""
-		    	                               }>
-		    	          ${cat.status === 1 ? "Approved" : "Approve Post"}
-		    	         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-		    	             <path d="M9 12L11 14L15 10" stroke="#ffffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-		    	             <path d="M21 12C21 16.4183 17.4183 20 13 20C8.58172 20 5 16.4183 5 12C5 7.58172 8.58172 4 13 4C17.4183 4 21 7.58172 21 12Z" stroke="#ffffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-		    	         </svg>
-		    	       </button>
+		    	                             ? ` <button 
+											   data-id="${cat.id}" 
+											   class="approve-button"
+											   ${cat.status == 1 ? "disabled" : ""}
+											   style="${cat.status == 1 ? 'opacity:0.6;cursor:not-allowed; background-color: #d1d1d1;' : ''}">
+											   ${cat.status == 1 ? "Approved" : "Approve Post"}
+											   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+											       <path d="M9 12L11 14L15 10" stroke="#ffffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+											       <path d="M21 12C21 16.4183 17.4183 20 13 20C8.58172 20 5 16.4183 5 12C5 7.58172 8.58172 4 13 4C17.4183 4 21 7.58172 21 12Z" stroke="#ffffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+											   </svg>
+											 </button>
 		    	       <button data-id="${cat.id}" class="reject-button">
 		    	         Reject Post
 		    	         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -173,5 +175,54 @@ async function fetchCatDetails() {
     }
 }
 
-console.log(isAdmin);
-document.addEventListener("DOMContentLoaded", fetchCatDetails);
+function updateAdoptionStatus(catId, isApproved) {
+  var params = new URLSearchParams();
+  params.append("catId", catId);
+  params.append("adoptStatus", isApproved);
+
+  fetch("update-status.jsp", {
+    method: "POST", 
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: params.toString()
+  })
+  .then(function(res) {
+    return res.json();
+  })
+  .then(function(data) {
+    if (data.success) {
+      showToast(
+        "Adoption " + (isApproved === 1 ? "approved" : "rejected") + " successfully.",
+        "success"
+      );
+      setTimeout(function() {
+        window.location.href = "cat-details.jsp?id=" + catId;
+      }, 3000);
+    } else {
+      showToast(data.message || "Update failed.", "error");
+    }
+  })
+  .catch(function(err) {
+    console.error("Error updating adoption:", err);
+    showToast("Something went wrong.", "error");
+  });
+}
+
+
+fetchCatDetails();
+
+var container = document.getElementById("cat-info");
+container.addEventListener("click", function(e) {
+  var approveBtn = e.target.closest(".approve-button");
+  var rejectBtn = e.target.closest(".reject-button");
+
+  if (approveBtn) {
+    if (approveBtn.disabled) return;
+    var catId = approveBtn.getAttribute("data-id");
+    updateAdoptionStatus(catId, 1);
+  } else if (rejectBtn) {
+    var catId = rejectBtn.getAttribute("data-id");
+    updateAdoptionStatus(catId, 2);
+  }
+});
+
+});
