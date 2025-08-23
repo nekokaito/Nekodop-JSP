@@ -9,7 +9,19 @@ String userProfilePicture = (String) session.getAttribute("userProfilePicture");
 String userRole = (String) session.getAttribute("userRole");
 boolean isAdmin = "admin".equals(userRole);
 
+
+if (userId == null) {
+    response.sendRedirect("login.jsp");
+    return;
+}
+if (!isAdmin) {
+	response.sendRedirect("index.jsp");
+    return;
+}
+
 %>
+
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -126,7 +138,7 @@ boolean isAdmin = "admin".equals(userRole);
                   <p id=""><i class="fa-solid fa-file"></i></p>
                 </div>
               </a>
-              <a href="pages/profile.html">
+              <a href="profile.jsp">
                 <div class="counter-item">
                   <h3>Profile</h3>
                   <p id=""><i class="fa-solid fa-user"></i></p>

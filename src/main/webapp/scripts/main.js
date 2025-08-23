@@ -14,7 +14,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (path.endsWith("dashboard.jsp")) {
         hash = "#dashboard";
-      } else {
+      }
+	   else if(path.endsWith("index.jsp")) {
+		hash = "#home";
+	  }
+	   else {
         hash = "#home";
       }
     }
