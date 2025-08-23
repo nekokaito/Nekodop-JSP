@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return res.json();
       })
       .then(function (data) {
-        // your jsp directly returns an array []
+        
         allCats = data || [];
         return allCats;
       })
