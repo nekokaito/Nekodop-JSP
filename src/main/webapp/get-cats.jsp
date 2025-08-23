@@ -5,7 +5,7 @@
     JSONArray catsArray = new JSONArray();
 
     try (Connection conn = DBConnection.getConnection()) {
-        String sql = "SELECT * FROM cats";
+        String sql = "SELECT * FROM cats ";
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 

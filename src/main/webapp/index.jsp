@@ -401,6 +401,7 @@ boolean isAdmin = "admin".equals(userRole);
     <script src="scripts/reponsive.js"></script>
     <script src="scripts/toast.js"></script>
     <script src="scripts/main.js"></script>
+    <script src="scripts/explore.js"></script>
     <script src="scripts/video.js"></script>
     <script src="scripts/gallery.js"></script>
     <script src="scripts/user-nav.js"></script>
