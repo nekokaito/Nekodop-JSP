@@ -54,15 +54,15 @@ if (userId == null) {
      <!-- Navbar -->
         <nav class="navbar">
             <div class="logo-div">
-                <a href="#" class="logo">Nekodop</a>
+                <a href="index.jsp" class="logo">Nekodop</a>
             </div>
 
             <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#explore">Explore</a></li>
-                <li><a href="#support">Support</a></li>
-                <li><a href="#gallery">Gallery</a></li>
-                <li><a href="#contact">Contact</a></li>
+                <li><a href="index.jsp">Home</a></li>
+                <li><a href="index.jsp#explore">Explore</a></li>
+                <li><a href="index.jsp#support">Support</a></li>
+                <li><a href="index.jsp#gallery">Gallery</a></li>
+                <li><a href="index.jsp#contact">Contact</a></li>
                 <% if (userId == null) { %>
                     <li class="login-phn">
                         <a href="login.jsp"><button class="login-btn">Login</button></a>
@@ -100,7 +100,7 @@ if (userId == null) {
     
     <div class="cat-details">
         <div id="nav-home" class="nav-home">
-          <a href="/index.html#explore" class="return-btn">
+          <a href="index.jsp#explore" class="return-btn">
             <i class="fas fa-arrow-left"></i>
             Back
           </a>
