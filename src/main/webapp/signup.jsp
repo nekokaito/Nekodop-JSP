@@ -201,31 +201,45 @@
     <script src="scripts/toast.js"></script>
     <script>
       // === Cloudinary upload ===
-      document.getElementById("profile-photo").addEventListener("change", async function() {
-          const file = this.files[0];
-          if (!file) return;
+     let uploadSuccess = false;
 
-          try {
-              const formData = new FormData();
-              formData.append("file", file);
-              formData.append("upload_preset", "nekodop");
-              formData.append("cloud_name", "dyvqe1hgj");
+document.getElementById("profile-photo").addEventListener("change", async function() {
+    const file = this.files[0];
+    if (!file) return;
 
-              const res = await fetch(
-                "https://api.cloudinary.com/v1_1/dyvqe1hgj/image/upload",
-                {
-                    method: "POST",
-                    body: formData,
-                }
-              );
+    try {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", "nekodop");
+        formData.append("cloud_name", "dyvqe1hgj");
 
-              const uploadedImg = await res.json();
-              document.getElementById("profile-photo-url").value = uploadedImg.secure_url;
-          } catch (err) {
-              console.error("Upload error", err);
-              alert("Failed to upload image");
-          }
-      });
+        const res = await fetch("https://api.cloudinary.com/v1_1/dyvqe1hgj/image/upload", {
+            method: "POST",
+            body: formData,
+        });
+
+        const uploadedImg = await res.json();
+
+        if (uploadedImg.secure_url) {
+            document.getElementById("profile-photo-url").value = uploadedImg.secure_url;
+            uploadSuccess = true;
+        } else {
+            uploadSuccess = false;
+            alert("Upload failed, please try again.");
+        }
+    } catch (err) {
+        console.error("Upload error", err);
+        uploadSuccess = false;
+        alert("Failed to upload image");
+    }
+});
+
+document.getElementById("signup-form").addEventListener("submit", function(e) {
+    if (!uploadSuccess) {
+        e.preventDefault();
+        showToast("Profile photo upload failed. Please try again.", "error");
+        return;
+    }
 
       // === Password validation (frontend) ===
       const validatePassword = (password) => {
