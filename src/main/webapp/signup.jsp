@@ -2,10 +2,17 @@
 <%@ page import="javax.servlet.http.*,javax.servlet.*" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.io.InputStream" %>
+
 <%
-    // Handle form submission
+    // === redirect if already logged in ===
+    if (session.getAttribute("userId") != null) {
+        response.sendRedirect("index.jsp");
+        return;
+    }
+
     boolean registrationSuccess = false;
     String message = null;
+
     if ("POST".equalsIgnoreCase(request.getMethod())) {
         String userId = java.util.UUID.randomUUID().toString();
         String name = request.getParameter("name");
@@ -35,6 +42,8 @@
             message = "Passwords do not match!";
         } else if (passwordError != null) {
             message = passwordError;
+        } else if (profilePhotoUrl == null || profilePhotoUrl.trim().isEmpty()) {
+            message = "Profile photo is required!";
         } else {
             Connection conn = null;
             PreparedStatement ps = null;
@@ -49,7 +58,6 @@
                 if (rs.next() && rs.getInt(1) > 0) {
                     message = "Email is already registered!";
                 } else {
-                    // Close previous resources
                     if (rs != null) rs.close();
                     if (ps != null) ps.close();
 
@@ -62,16 +70,11 @@
                     ps.setString(2, name);
                     ps.setString(3, email);
                     ps.setString(4, password); 
-                    if (profilePhotoUrl == null || profilePhotoUrl.trim().isEmpty()) {
-                        ps.setNull(5, java.sql.Types.VARCHAR);
-                    } else {
-                        ps.setString(5, profilePhotoUrl);
-                    }
+                    ps.setString(5, profilePhotoUrl);
 
                     int inserted = ps.executeUpdate();
 
                     if (inserted > 0) {
-                        // query back inserted data
                         if (ps != null) ps.close();
                         ps = conn.prepareStatement("SELECT user_role, created_at FROM users WHERE id = ?");
                         ps.setString(1, userId);
@@ -84,7 +87,6 @@
                             createdAt = rs.getString("created_at");
                         }
 
-                        // Save user info in session
                         session.setAttribute("userId", userId);
                         session.setAttribute("userName", name);
                         session.setAttribute("userEmail", email);
@@ -126,10 +128,7 @@
     <link rel="stylesheet" href="styles/toast.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="signup-body">
@@ -148,7 +147,6 @@
         </div>
 
         <form id="signup-form" method="post" action="signup.jsp">
-          <div class="form-row"></div>
           <div class="form-group">
             <label for="name">Name</label>
             <input type="text" id="name" name="name" required/>
@@ -160,7 +158,7 @@
           <div class="form-group">
             <label for="profile-photo">Upload Profile Photo</label>
             <input type="file" id="profile-photo" accept="image/*" />
-             <input type="hidden" name="profilePhotoUrl" id="profile-photo-url" />
+            <input type="hidden" name="profilePhotoUrl" id="profile-photo-url" />
           </div>
           <div class="form-group">
             <label for="password">Password</label>
@@ -170,7 +168,7 @@
             <label for="re-password">Re-Password</label>
             <input type="password" id="re-password" name="re-password" autocomplete="new-password" required />
           </div>
-           <button type="submit">Submit</button>
+           <button type="submit" id="submit-btn">Submit</button>
           <span class="form-footer">
             <p>
               Already Have an Account?
@@ -186,11 +184,7 @@
             <div class="paper-plane-wrapper">
               <div class="plane">
                 <div class="trail">
-                  <img
-                    class="paper-plane paper-plane-img"
-                    src="images/paperfly.png"
-                    alt="Paper Plane"
-                  />
+                  <img class="paper-plane paper-plane-img" src="images/paperfly.png" alt="Paper Plane"/>
                 </div>
               </div>
             </div>
@@ -200,88 +194,84 @@
     </div>
     <script src="scripts/toast.js"></script>
     <script>
-      // === Cloudinary upload ===
-     let uploadSuccess = false;
+      let uploadSuccess = false;
+      const fileInput = document.getElementById("profile-photo");
+      const hiddenInput = document.getElementById("profile-photo-url");
+      const submitBtn = document.getElementById("submit-btn");
 
-document.getElementById("profile-photo").addEventListener("change", async function() {
-    const file = this.files[0];
-    if (!file) return;
+      fileInput.addEventListener("change", async function() {
+          const file = this.files[0];
+          if (!file) return;
 
-    try {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("upload_preset", "nekodop");
-        formData.append("cloud_name", "dyvqe1hgj");
+          submitBtn.disabled = true;
 
-        const res = await fetch("https://api.cloudinary.com/v1_1/dyvqe1hgj/image/upload", {
-            method: "POST",
-            body: formData,
-        });
+          try {
+              const formData = new FormData();
+              formData.append("file", file);
+              formData.append("upload_preset", "nekodop");
 
-        const uploadedImg = await res.json();
+              const res = await fetch("https://api.cloudinary.com/v1_1/dyvqe1hgj/image/upload", {
+                  method: "POST",
+                  body: formData,
+              });
 
-        if (uploadedImg.secure_url) {
-            document.getElementById("profile-photo-url").value = uploadedImg.secure_url;
-            uploadSuccess = true;
-        } else {
-            uploadSuccess = false;
-            alert("Upload failed, please try again.");
-        }
-    } catch (err) {
-        console.error("Upload error", err);
-        uploadSuccess = false;
-        alert("Failed to upload image");
-    }
-});
+              const uploadedImg = await res.json();
 
-document.getElementById("signup-form").addEventListener("submit", function(e) {
-    if (!uploadSuccess) {
-        e.preventDefault();
-        showToast("Profile photo upload failed. Please try again.", "error");
-        return;
-    }
+              if (uploadedImg.secure_url) {
+                  hiddenInput.value = uploadedImg.secure_url;
+                  uploadSuccess = true;
+                  submitBtn.disabled = false;
+              } else {
+                  uploadSuccess = false;
+                  alert("Upload failed, please try again.");
+                  submitBtn.disabled = false;
+              }
+          } catch (err) {
+              console.error("Upload error", err);
+              uploadSuccess = false;
+              alert("Failed to upload image");
+              submitBtn.disabled = false;
+          }
+      });
 
-      // === Password validation (frontend) ===
-      const validatePassword = (password) => {
-        password = password.trim(); 
-        let error = null;
+      document.getElementById("signup-form").addEventListener("submit", function(e) {
+          const password = document.getElementById("password").value.trim();
+          const rePassword = document.getElementById("re-password").value.trim();
+          const photoUrl = hiddenInput.value.trim();
 
-        if (password.length < 8) {
-          error = "Password must be at least 8 characters long.";
-        } else if (!/[A-Z]/.test(password)) {
-          error = "Password must contain at least one uppercase letter.";
-        } else if (!/[a-z]/.test(password)) {
-          error = "Password must contain at least one lowercase letter.";
-        } else if (!/\d/.test(password)) {
-          error = "Password must contain at least one digit.";
-        } else if (!/[!@#$%^&*(),.?\":{}|<>]/.test(password)) {
-          error = "Password must contain at least one special character.";
-        }
+          if (!uploadSuccess || !photoUrl) {
+              e.preventDefault();
+              showToast("Please wait until profile photo upload completes.", "error");
+              return;
+          }
 
-        return {
-          isValid: error === null,
-          error,
-        };
-      };
+          if (password.length < 8) {
+              e.preventDefault();
+              showToast("Password must be at least 8 characters long.", "error");
+              return;
+          } else if (!/[A-Z]/.test(password)) {
+              e.preventDefault();
+              showToast("Password must contain at least one uppercase letter.", "error");
+              return;
+          } else if (!/[a-z]/.test(password)) {
+              e.preventDefault();
+              showToast("Password must contain at least one lowercase letter.", "error");
+              return;
+          } else if (!/\d/.test(password)) {
+              e.preventDefault();
+              showToast("Password must contain at least one digit.", "error");
+              return;
+          } else if (!/[!@#$%^&*(),.?\":{}|<>]/.test(password)) {
+              e.preventDefault();
+              showToast("Password must contain at least one special character.", "error");
+              return;
+          }
 
-      document.getElementById("signup-form").addEventListener("submit", function (e) {
-        const password = document.getElementById("password").value;
-        const rePassword = document.getElementById("re-password").value;
-
-        const { isValid, error } = validatePassword(password);
-
-        if (!isValid) {
-          e.preventDefault();
-          
-          showToast(error, "error");
-          return;
-        }
-
-        if (password !== rePassword) {
-          e.preventDefault();
-          showToast("Passwords do not match!", "error");
-          return;
-        }
+          if (password !== rePassword) {
+              e.preventDefault();
+              showToast("Passwords do not match!", "error");
+              return;
+          }
       });
 
       <% if (message != null) { %>
