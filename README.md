@@ -1,6 +1,6 @@
-# Nekodop (JSP) — Submodule README
+# Nekodop (JSP)
 
-**Nekodop (JSP)**  
+
 A simple JSP/Servlet Java web app for cat adoption posts — converted from an HTML/CSS/JS frontend.  
 Designed to be used as a lightweight sub-repo/submodule without heavy frameworks (no Spring).  
 Suitable for deployment on Tomcat or any servlet container.
