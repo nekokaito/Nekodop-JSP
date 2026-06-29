@@ -61,7 +61,6 @@ boolean isAdmin = "admin".equals(userRole);
                 <li><a href="#home">Home</a></li>
                 <li><a href="#explore">Explore</a></li>
                 <li><a href="#support">Support</a></li>
-                <li><a href="#gallery">Gallery</a></li>
                 <li><a href="#contact">Contact</a></li>
                 <% if (userId == null) { %>
                     <li class="login-phn">
@@ -314,22 +313,6 @@ boolean isAdmin = "admin".equals(userRole);
                         amplify the meows that matter. Together, we are not just building
                         a platform — we are building hope, one paw at a time.
                     </p>
-                </div>
-            </div>
-
-            <!-- Gallery Section -->
-            <div id="gallery" class="gallery">
-                <h1>Nekodop Gallery</h1>
-                <div class="gallery-description">
-                    <p>
-                        From fluffy giants to sleek and elegant companions, the world is
-                        filled with unique cat breeds, each with their own charm, look,
-                        and personality. Discover the beauty of nature’s design through
-                        these fascinating felines from every corner of the globe.
-                    </p>
-                </div>
-                <div class="gallery-container">
-                   
                 </div>
             </div>
 

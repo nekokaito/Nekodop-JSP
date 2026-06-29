@@ -134,7 +134,6 @@ try {
                 <li><a href="index.jsp">Home</a></li>
                 <li><a href="index.jsp#explore">Explore</a></li>
                 <li><a href="index.jsp#support">Support</a></li>
-                <li><a href="index.jsp#gallery">Gallery</a></li>
                 <li><a href="index.jsp#contact">Contact</a></li>
                 <% if (userId == null) { %>
                     <li class="login-phn">
@@ -296,6 +295,11 @@ try {
                             <label for="cat-image">Cat Image</label>
                             <input type="file" id="cat-image" accept="image/*" />
                             <span class="error" id="error-image"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="cat-image">Cat Video (optional)</label>
+                            <input type="file" id="cat-video" accept="video/*" />
+                            <span class="error" id="error-video"></span>
                         </div>
                         <div class="form-group">
                             <label for="address">Address</label>

@@ -26,6 +26,7 @@ String ownerAddress = request.getParameter("ownerAddress");
 String phone = request.getParameter("ownerPhone");
 String additionalInfo = request.getParameter("additionalInfo");
 String catImageUrl = request.getParameter("catImageUrl");
+String videoUrl = request.getParameter("catVideoUrl");
 
 // Validate parameters
 if (catName == null || catGender == null || catImageUrl == null) {
@@ -57,7 +58,7 @@ if (month > 0) {
 if (catAge.isEmpty()) catAge = "0 months";
 
     // Prepare SQL
-    String sql = "INSERT INTO cats (id, cat_owner_id, cat_name, cat_image, cat_age, cat_gender, cat_description, owner_phone, owner_address, additional_information, owner_name, owner_email, owner_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    String sql = "INSERT INTO cats (id, cat_owner_id, cat_name, cat_image, cat_video, cat_age, cat_gender, cat_description, owner_phone, owner_address, additional_information, owner_name, owner_email, owner_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     PreparedStatement ps = conn.prepareStatement(sql);
     
     // Set parameters
@@ -65,15 +66,16 @@ if (catAge.isEmpty()) catAge = "0 months";
     ps.setString(2, userId);
     ps.setString(3, catName);
     ps.setString(4, catImageUrl);
-    ps.setString(5, catAge.trim());
-    ps.setString(6, catGender);
-    ps.setString(7, catDescription);
-    ps.setString(8, phone != null ? phone : "");
-    ps.setString(9, ownerAddress != null ? ownerAddress : "");
-    ps.setString(10, additionalInfo != null ? additionalInfo : "");
-    ps.setString(11, userName);
-    ps.setString(12, userEmail);
-    ps.setString(13, userProfilePicture);
+    ps.setString(5, videoUrl != null && !videoUrl.isEmpty() ? videoUrl: null);
+    ps.setString(6, catAge.trim());
+    ps.setString(7, catGender);
+    ps.setString(8, catDescription);
+    ps.setString(9, phone != null ? phone : "");
+    ps.setString(10, ownerAddress != null ? ownerAddress : "");
+    ps.setString(11, additionalInfo != null ? additionalInfo : "");
+    ps.setString(12, userName);
+    ps.setString(13, userEmail);
+    ps.setString(14, userProfilePicture);
 
     // Execute and check result
     int rows = ps.executeUpdate();

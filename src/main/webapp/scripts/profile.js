@@ -102,6 +102,44 @@ document.addEventListener('DOMContentLoaded', function() {
 	     });
 	 }
 
+	 
+	 function uploadVideoToCloudinary(file) {
+	     return new Promise(function(resolve, reject) {
+
+	         const formData = new FormData();
+
+	         formData.append("file", file);
+	         formData.append("upload_preset", "nekodop");
+	         formData.append("cloud_name", "dyvqe1hgj");
+
+	         fetch(
+	             "https://api.cloudinary.com/v1_1/dyvqe1hgj/video/upload",
+	             {
+	                 method: "POST",
+	                 body: formData
+	             }
+	         )
+	         .then(res => {
+	             if (!res.ok)
+	                 throw new Error("Video upload failed");
+
+	             return res.json();
+	         })
+	         .then(data => {
+
+	             resolve(data.secure_url);
+
+	         })
+	         .catch(err => {
+
+	             console.error(err);
+
+	             reject(err);
+
+	         });
+
+	     });
+	 }
 	
 	
     // Profile image preview
@@ -537,12 +575,33 @@ document.addEventListener('DOMContentLoaded', function() {
             const catImageInput = document.getElementById('cat-image');
             const catImage = catImageInput.files[0];
             if (!catImage) showError('image', "Please select an image");
+			
+			
+			const catVideoInput =
+			document.getElementById(
+			'cat-video'
+			);
+
+			const catVideo =
+			catVideoInput.files[0];
+			
 
             if (!isValid) return;
 
             try {
                 // Upload image to Cloudinary
                 const imageUrl = await uploadImageToCloudinary(catImage);
+				
+				let videoUrl = "";
+
+				if(catVideo){
+
+				    videoUrl =
+				    await uploadVideoToCloudinary(
+				        catVideo
+				    );
+
+				}
                 
                 // Prepare form data with correct parameter names
 				const params = new URLSearchParams();
@@ -555,6 +614,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				params.append('additionalInfo', document.getElementById('additional').value.trim());
 				params.append('catDescription', document.getElementById('description').value.trim());
 				params.append('catImageUrl', imageUrl); // From Cloudinary
+				params.append('catVideoUrl',videoUrl); 
 
 				const response = await fetch('create-cat.jsp', {
 				  method: 'POST',
