@@ -76,11 +76,11 @@
 
 .cat-image {
   flex: 1;
-  max-width: 100%;
+  max-width: 70%;
 }
 
 .cat-image img {
-  width: 80%;
+  width: 50%;
   height: auto;
   border-radius: 10px;
   object-fit: cover;
@@ -237,4 +237,73 @@
   width: 100%;
   height: auto;
   border-radius: 20px;
+}
+
+
+
+.main-preview{
+    width:100%;
+    height:520px;
+
+    object-fit:cover;
+
+    border-radius:12px;
+}
+
+.hidden{
+
+    display:none;
+
+}
+
+.media-selector{
+
+    display:flex;
+
+    gap:12px;
+
+    margin-top:15px;
+
+}
+
+.media-thumb{
+
+    width:80px;
+
+    height:80px;
+
+    border-radius:10px;
+
+    overflow:hidden;
+
+    cursor:pointer;
+
+    border:2px solid transparent;
+
+}
+
+.media-thumb img{
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:cover;
+
+}
+
+.media-thumb video{
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:cover;
+
+}
+
+.media-thumb.active{
+
+    border-color:#9e77d1;
+
 }

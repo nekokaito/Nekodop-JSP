@@ -41,14 +41,78 @@ async function fetchCatDetails() {
             morePostsLink.innerHTML = '<i class="fa-solid fa-file"></i> More Posts';
             navHome.appendChild(morePostsLink);
         }
-
+      
+		
+		console.log(cat.video);
         
         document.getElementById("cat-info").innerHTML = ` 
 		    	                
 		    	                <div class="cat-content">
-		    	                 <div class="cat-image">
-		    	                     <img src="${cat.image}" alt="${cat.name}">
-		    	                 </div>
+								<div class="cat-image">
+
+								    <div id="preview-container">
+
+								        <img
+								            id="main-preview-image"
+								            src="${cat.image}"
+								            alt="${cat.name}"
+								            class="main-preview">
+
+								        <video
+								            id="main-preview-video"
+								            class="main-preview hidden"
+								            controls>
+
+								            <source
+								                src="${cat.video || ''}"
+								                type="video/mp4">
+
+								        </video>
+
+								    </div>
+
+								    ${
+								        cat.video
+								        ?
+
+								        `
+
+								        <div class="media-selector">
+
+								            <div
+								                class="media-thumb active"
+								                id="show-image">
+
+								                <img
+								                    src="${cat.image}"
+								                    alt="image">
+
+								            </div>
+
+								            <div
+								                class="media-thumb"
+								                id="show-video">
+
+								                <video>
+
+								                    <source
+								                        src="${cat.video}">
+
+								                </video>
+
+								            </div>
+
+								        </div>
+
+								        `
+
+								        :
+
+								        ''
+
+								    }
+
+								</div>
 		    	                 
 		    	                 <div class="cat-info">
 		    	                     <h1 class="pet-name">${cat.name}</h1>
@@ -168,6 +232,56 @@ async function fetchCatDetails() {
 		    	   <p class="poster-text">Adopting a cat on Nekodop is designed to be as smooth and straightforward as possible. First, you visit the platform and browse through the available cats listed by their current owners. Each listing contains key details such as the cat’s name, age, gender, a photo, and a short description that gives insight into the cat’s personality, background, or special needs. Once you find a cat you’re interested in, you don’t need to sign up or fill out any forms. Instead, you’ll see the owner’s contact information on the post. Nekodop allows you to instantly reach out to the owner through WhatsApp by clicking the provided link, which opens a chat directly, or you can choose to send them an email if that’s more convenient. From there, you can ask questions, set up a meeting, or plan the adoption—all in a way that feels natural and human. This personal approach helps build trust between both parties and ensures the cat finds a loving, suitable new home.</p></div>
 		    	          </div>
 		    	          `;
+						  
+						  if(cat.video){
+
+							const imageBtn =
+							document.getElementById("show-image");
+
+							const videoBtn =
+							document.getElementById("show-video");
+
+							const image =
+							document.getElementById("main-preview-image");
+
+							const video =
+							document.getElementById("main-preview-video");
+
+							if (
+							    imageBtn &&
+							    videoBtn &&
+							    image &&
+							    video
+							) {
+
+							    imageBtn.addEventListener("click", () => {
+
+							        image.classList.remove("hidden");
+
+							        video.classList.add("hidden");
+
+							        video.pause();
+
+							        imageBtn.classList.add("active");
+
+							        videoBtn.classList.remove("active");
+
+							    });
+
+							    videoBtn.addEventListener("click", () => {
+
+							        image.classList.add("hidden");
+
+							        video.classList.remove("hidden");
+
+							        imageBtn.classList.remove("active");
+
+							        videoBtn.classList.add("active");
+
+							    });
+
+							}
+						  }
 
     } catch (error) {
         document.getElementById("cat-info").innerHTML = "<p>Failed to load cat details.</p>";
