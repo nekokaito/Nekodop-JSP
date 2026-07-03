@@ -489,6 +489,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	            if (newImageFile) {
 	                // upload new image 
 	                imageUrl = await uploadImageToCloudinary(newImageFile);
+					
 	            }
 				
 	            // Prepare form data
@@ -590,12 +591,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
             try {
                 // Upload image to Cloudinary
+				
+				showToast("Uploading image...", "info");
                 const imageUrl = await uploadImageToCloudinary(catImage);
 				
 				let videoUrl = "";
 
 				if(catVideo){
-
+					showToast("Uploading video...", "info");
 				    videoUrl =
 				    await uploadVideoToCloudinary(
 				        catVideo
