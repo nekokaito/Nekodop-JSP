@@ -569,6 +569,13 @@ document.addEventListener('DOMContentLoaded', function () {
             setValue('edit-cat-image-current', cat.image);
             setValue('edit-cat-video-current', cat.video || '');
 
+            const adoptionStatus = getEl('edit-adoption-status');
+            const adopterId = getEl('edit-adopted-by');
+            if (adoptionStatus) adoptionStatus.value = String(cat.adopted) === '1' ? '1' : '0';
+            if (adopterId) adopterId.value = cat.adoptedBy || '';
+            await loadCatViewers(catId, cat.adoptedBy || '');
+            updateAdoptionFields();
+
             
             setValue(EDIT_FORM_CONFIG.ids.image, '');
             setValue(EDIT_FORM_CONFIG.ids.video, '');
@@ -580,6 +587,70 @@ document.addEventListener('DOMContentLoaded', function () {
             showToast('Error loading cat data', 'error');
         }
     }
+
+    const adoptionStatusSelect = getEl('edit-adoption-status');
+    const adopterGroup = getEl('edit-adopter-group');
+    const adopterTrigger = getEl('edit-adopter-trigger');
+    const adopterOptions = getEl('edit-adopter-options');
+    const adopterSelection = getEl('edit-adopter-selection');
+    const adoptedByInput = getEl('edit-adopted-by');
+
+    function updateAdoptionFields() {
+        if (!adoptionStatusSelect || !adopterGroup) return;
+        adopterGroup.classList.toggle('hidden', adoptionStatusSelect.value !== '1');
+    }
+
+    async function loadCatViewers(catId, selectedId) {
+        if (!adopterOptions) return;
+        adopterOptions.innerHTML = '<p class="adopter-empty">Loading viewers…</p>';
+        try {
+            const response = await fetch('get-cat-viewers.jsp?catId=' + encodeURIComponent(catId));
+            const result = await response.json();
+            if (!response.ok || !result.success) throw new Error(result.message || 'Could not load viewers');
+            adopterOptions.innerHTML = '';
+            (result.users || []).forEach(function (user) {
+                const option = document.createElement('button');
+                option.type = 'button';
+                option.className = 'adopter-option';
+                option.dataset.userId = user.id;
+                const image = document.createElement('img');
+                image.src = user.profilePicture || 'images/profile.png';
+                image.alt = '';
+                const name = document.createElement('span');
+                name.textContent = user.name || 'User';
+                option.append(image, name);
+                option.addEventListener('click', function () {
+                    adoptedByInput.value = user.id;
+                    adopterSelection.innerHTML = '';
+                    adopterSelection.append(image.cloneNode(), name.cloneNode(true));
+                    adopterOptions.classList.add('hidden');
+                    adopterTrigger.setAttribute('aria-expanded', 'false');
+                });
+                adopterOptions.appendChild(option);
+                if (user.id === selectedId) option.click();
+            });
+            if (!result.users || result.users.length === 0) {
+                adopterOptions.innerHTML = '<p class="adopter-empty">No viewers yet. A user must view this cat before they can be selected.</p>';
+                adoptedByInput.value = '';
+                adopterSelection.textContent = 'No viewers available';
+            } else if (!selectedId || !result.users.some(function (user) { return user.id === selectedId; })) {
+                adoptedByInput.value = '';
+                adopterSelection.textContent = 'Choose a user who viewed this cat';
+            }
+        } catch (error) {
+            adopterOptions.innerHTML = '<p class="adopter-empty">Could not load viewers.</p>';
+            adoptedByInput.value = '';
+            adopterSelection.textContent = 'Could not load viewers';
+            console.error(error);
+        }
+    }
+
+    if (adoptionStatusSelect) adoptionStatusSelect.addEventListener('change', updateAdoptionFields);
+    if (adopterTrigger) adopterTrigger.addEventListener('click', function () {
+        const opening = adopterOptions.classList.contains('hidden');
+        adopterOptions.classList.toggle('hidden', !opening);
+        adopterTrigger.setAttribute('aria-expanded', String(opening));
+    });
 
     const editCatBtns = document.querySelectorAll('.edit-cat');
     editCatBtns.forEach(function (btn) {
@@ -603,6 +674,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const form = readCatForm(EDIT_FORM_CONFIG, false); // image optional when editing
             if (!form.isValid) return;
+            if (adoptionStatusSelect.value === '1' && !adoptedByInput.value) {
+                showToast('Choose a viewer as the adopter before saving.', 'error');
+                return;
+            }
 
             try {
                 const media = await uploadCatMedia(
@@ -613,6 +688,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 const params = buildCatParams(form.data, media);
                 params.append('catId', getValue('edit-cat-id'));
+                params.append('adoptionStatus', adoptionStatusSelect.value);
+                params.append('adoptedBy', adoptedByInput.value);
 
                 const data = await postParams('update-cat.jsp', params);
 

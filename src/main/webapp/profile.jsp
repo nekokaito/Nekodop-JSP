@@ -465,6 +465,25 @@ try (Connection conn = DBConnection.getConnection();
                                     </div>
                                 </div>
                                 <div class="form-group">
+                                    <label for="edit-adoption-status">Adoption</label>
+                                    <select id="edit-adoption-status" required>
+                                        <option value="0">Not Yet</option>
+                                        <option value="1">Adopted</option>
+                                    </select>
+                                </div>
+                                <div class="form-group hidden" id="edit-adopter-group">
+                                    <label>Adopted by</label>
+                                    <div class="adopter-picker" id="edit-adopter-picker">
+                                        <button type="button" id="edit-adopter-trigger" class="adopter-trigger" aria-expanded="false">
+                                            <span id="edit-adopter-selection">Choose a user who viewed this cat</span>
+                                            <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+                                        </button>
+                                        <div id="edit-adopter-options" class="adopter-options hidden"></div>
+                                        <input type="hidden" id="edit-adopted-by" />
+                                    </div>
+                                    <small>Only people who viewed this listing can be selected.</small>
+                                </div>
+                                <div class="form-group">
                                     <input type="hidden" id="edit-cat-image-current" />
                                     <label for="edit-cat-image-new">Update Cat Image</label>
                                     <input type="file" id="edit-cat-image-new" accept="image/*" />  

@@ -19,7 +19,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function renderCat(cat) {
     var isAdopted = String(cat.adopted) === "1";
-    var isOwner = String(currentUserId) === String(cat.ownerId);
     var ownerImage = cat.ownerImage || "images/profile.png";
     var age = String(cat.age || "Age unknown").replace(/^0 years\s*/, "");
     var phone = String(cat.phone || "").replace(/\D/g, "");
@@ -42,10 +41,6 @@ document.addEventListener("DOMContentLoaded", function () {
       "' aria-pressed='" + Boolean(cat.isFavorite) + "' title='" +
       (cat.isFavorite ? "Remove from favorites" : "Add to favorites") + "'><svg viewBox='0 0 24 24' aria-hidden='true'><path d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'></path></svg></button>";
 
-    var adoptButton = !isOwner && !isAdopted
-      ? "<button type='button' class='adopt-button' data-cat-id='" + escapeHtml(cat.id) + "'>Mark adopted</button>"
-      : "";
-
     catInfo.innerHTML = "<article class='cat-content'>" +
       "<div class='cat-image'><div id='preview-container'>" +
         "<img id='main-preview-image' class='main-preview" + (video ? "" : " image-only") + "' src='" + image + "' alt='" + escapeHtml(cat.name) + "'>" +
@@ -67,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
         "<div class='action-buttons'>" + favoriteButton +
           "<a class='whatsapp-button' href='" + whatsappUrl + "' target='_blank' rel='noopener noreferrer' data-cat-id='" + escapeHtml(cat.id) + "'><i class='fa-brands fa-whatsapp' aria-hidden='true'></i> Chat on WhatsApp</a>" +
           "<a class='email-button' href='mailto:" + escapeHtml(cat.ownerEmail || "") + "'><i class='fa-regular fa-envelope' aria-hidden='true'></i> Send an Email</a>" +
-          adoptButton + adminActions +
+          adminActions +
         "</div>" +
         "<section class='posted-by'><h3>Posted by</h3><div class='poster-info'>" +
           "<div class='poster-avatar'><img src='" + escapeHtml(ownerImage) + "' alt='Owner profile'></div>" +
@@ -109,7 +104,6 @@ document.addEventListener("DOMContentLoaded", function () {
   catInfo.addEventListener("click", function (event) {
     var favoriteButton = event.target.closest(".detail-favorite");
     var approvalButton = event.target.closest(".approve-button, .reject-button");
-    var adoptButton = event.target.closest(".adopt-button");
     var chatLink = event.target.closest(".whatsapp-button");
 
     if (favoriteButton) {
@@ -131,12 +125,6 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!result.success) return showMessage(result.message || "Could not update post status.");
         window.location.reload();
       }).catch(function () { showMessage("Could not update post status."); });
-    } else if (adoptButton) {
-      event.preventDefault();
-      postStatus(adoptButton.dataset.catId, "adoptStatus", "1").then(function (result) {
-        if (!result.success) return showMessage(result.message || "Could not mark this cat adopted.");
-        window.location.reload();
-      }).catch(function () { showMessage("Could not mark this cat adopted."); });
     } else if (chatLink) {
       fetch("record-cat-view.jsp", {
         method: "POST",
