@@ -193,6 +193,7 @@ if (!isAdmin) {
                 <tr>
                   <th>Name</th>
                   <th>Email</th>
+                  <th>Phone</th>
                   <th>Created At</th>
                   <th></th>
                 </tr>
@@ -200,7 +201,7 @@ if (!isAdmin) {
               <tbody id="user-list">
                 <!-- user list  -->
                 <tr>
-                  <td colspan="4" class="text-center">Loading users...</td>
+                  <td colspan="5" class="text-center">Loading users...</td>
                 </tr>
               </tbody>
             </table>
@@ -223,10 +224,10 @@ if (!isAdmin) {
             </div>
             <div class="posts-filter">
               <select id="filter" class="filter-select">
+                <option value="all" selected>All Posts</option>
                 <option value="pending">Pending</option>
                 <option value="approved">Approved</option>
                 <option value="rejected">Rejected</option>
-                <option value="all">All</option>
               </select>
             </div>
           </div>

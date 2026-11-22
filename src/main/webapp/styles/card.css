@@ -13,9 +13,76 @@
   padding: 16px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease,
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
     background-color 0.3s ease;
   overflow: hidden;
+}
+
+.cat-card-link {
+  position: relative;
+}
+
+.cat-card-main {
+  display: block;
+  color: inherit;
+}
+
+.favorite-button {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: #000;
+  font-size: 22px;
+  box-shadow: none;
+  cursor: pointer;
+  align-self: center;
+  line-height: 0;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+
+.favorite-button[aria-pressed="true"] {
+  color: #000;
+}
+
+.favorite-button svg {
+  display: block;
+  width: 34px;
+  height: 34px;
+}
+
+.favorite-button svg path {
+  fill: transparent;
+  stroke: #000;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: fill 160ms ease;
+}
+
+.favorite-button[aria-pressed="true"] svg path {
+  fill: #c4b5fd;
+}
+
+.favorite-button:hover {
+  transform: scale(1.06);
+}
+
+.favorite-button:focus-visible {
+  outline: 3px solid rgba(196, 181, 253, 0.65);
+  outline-offset: 3px;
 }
 
 .owner-img img {

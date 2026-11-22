@@ -20,6 +20,47 @@
   align-items: center;
   margin-top: 1rem;
 }
+
+#post-container .card {
+  position: relative;
+  width: min(100%, 390px);
+  height: auto;
+  align-self: start;
+}
+
+#post-container .card-text p {
+  margin: 6px 0;
+  overflow-wrap: anywhere;
+}
+
+.badge-breed,
+.badge-approval,
+.badge-adopted,
+.badge-available {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  background: #eee8f6;
+  color: #493c5b;
+}
+
+.badge-adopted {
+  background: #d9f2e3;
+  color: #23653b;
+}
+
+.badge-available {
+  background: #e5edff;
+  color: #344e85;
+}
+
+.posts-error {
+  padding: 18px;
+  color: #9b1c1c;
+  background: #fff0f0;
+  border-radius: 10px;
+}
 .posts-header,
 .user-header {
   display: flex;

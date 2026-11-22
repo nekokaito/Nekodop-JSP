@@ -5,9 +5,6 @@ response.setContentType("application/json;charset=UTF-8");
 boolean success = false;
 String message = "";
 String userId = (String) session.getAttribute("userId");
-String userName = (String)  session.getAttribute("userName");
-String userEmail = (String) session.getAttribute("userEmail");
-String userProfilePicture = (String) session.getAttribute("userProfilePicture");
 
 JSONObject json = new JSONObject();
 
@@ -23,16 +20,15 @@ if (userId == null) {
 String catId = request.getParameter("catId");
 String catName = request.getParameter("catName");
 String catGender = request.getParameter("catGender");
+String catBreed = request.getParameter("catBreed");
 String catDescription = request.getParameter("catDescription");
 String ownerAddress = request.getParameter("ownerAddress");
-String phone = request.getParameter("ownerPhone");
 String additionalInfo = request.getParameter("additionalInfo");
 String catImageUrl = request.getParameter("catImageUrl");
 String catVideoUrl = request.getParameter("catVideoUrl");
-String adoptStatus = request.getParameter("adoptStatus");
 
 // validation
-if (catId == null || catName == null || catGender == null) {
+if (catId == null || catName == null || catGender == null || catBreed == null) {
     json.put("success", false);
     json.put("message", "Missing required parameters");
     out.print(json.toString());
@@ -60,8 +56,7 @@ if (catAge.isEmpty()) catAge = "0 months";
 try (Connection conn = DBConnection.getConnection();
 	     PreparedStatement ps = conn.prepareStatement(
 	         "UPDATE cats SET cat_name = ?, cat_image = ?, cat_video = ?, cat_age = ?, cat_gender = ?, " +
-	         "cat_description = ?, owner_phone = ?, owner_address = ?, additional_information = ?, adopted = ?, " +
-	         "owner_name = ?, owner_email = ?, owner_image = ? " +
+	         "cat_breed = ?, cat_description = ?, owner_address = ?, additional_information = ? " +
 	         "WHERE id = ? AND cat_owner_id = ?"
 	     )) {
 
@@ -70,16 +65,12 @@ try (Connection conn = DBConnection.getConnection();
 	    ps.setString(3, catVideoUrl); 
 	    ps.setString(4, catAge.trim());
 	    ps.setString(5, catGender);
-	    ps.setString(6, catDescription);
-	    ps.setString(7, phone != null ? phone : "");
+	    ps.setString(6, catBreed);
+	    ps.setString(7, catDescription);
 	    ps.setString(8, ownerAddress != null ? ownerAddress : "");
 	    ps.setString(9, additionalInfo != null ? additionalInfo : "");
-	    ps.setInt(10, "1".equals(adoptStatus) ? 1 : 0);
-	    ps.setString(11, userName);
-	    ps.setString(12, userEmail);
-	    ps.setString(13, userProfilePicture);
-	    ps.setString(14, catId);
-	    ps.setString(15, userId);
+	    ps.setString(10, catId);
+	    ps.setString(11, userId);
 
 	    int rows = ps.executeUpdate();
 	    success = rows > 0;

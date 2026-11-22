@@ -1,342 +1,175 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener("DOMContentLoaded", function () {
+  var catInfo = document.getElementById("cat-info");
+  var catId = new URLSearchParams(window.location.search).get("id");
 
-async function fetchCatDetails() {
-
-	
-    let params = new URLSearchParams(window.location.search);
-    let catId = params.get("id");
-    
-    if (!catId) return;
-
-    try {
-        const res = await fetch("get-cat.jsp?id=" + catId);
-        const cat = await res.json();
-
-        if (!cat || cat.error) {
-            document.getElementById("cat-info").innerHTML = "<p>Cat not found.</p>";
-            return;
-        }
-
-        // format date
-        let date = new Date(cat.created_at);
-        let formattedDate = date.toLocaleDateString("en-US", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-        });
-
-        // whatsapp link
-        let whatsappLink =
-            "https://api.whatsapp.com/send?phone=88" +
-            cat.phone +
-            "&text=Message%20From%20NekoDop:%20Hello,%20I%20would%20like%20to%20ask%20about%20" +
-            encodeURIComponent(cat.name);
-
-        // admin buttons
-        if (isAdmin) {
-            let navHome = document.getElementById("nav-home");
-            let morePostsLink = document.createElement("a");
-            morePostsLink.href = "dashboard.jsp#posts";
-            morePostsLink.className = "return-btn";
-            morePostsLink.innerHTML = '<i class="fa-solid fa-file"></i> More Posts';
-            navHome.appendChild(morePostsLink);
-        }
-      
-		
-		console.log(cat.video);
-        
-        document.getElementById("cat-info").innerHTML = ` 
-		    	                
-		    	                <div class="cat-content">
-								<div class="cat-image">
-
-								    <div id="preview-container">
-
-								        <img
-								            id="main-preview-image"
-								            src="${cat.image}"
-								            alt="${cat.name}"
-								            class="main-preview">
-
-								        <video
-								            id="main-preview-video"
-								            class="main-preview hidden"
-								            controls>
-
-								            <source
-								                src="${cat.video || ''}"
-								                type="video/mp4">
-
-								        </video>
-
-								    </div>
-
-								    ${
-								        cat.video
-								        ?
-
-								        `
-
-								        <div class="media-selector">
-
-								            <div
-								                class="media-thumb active"
-								                id="show-image">
-
-								                <img
-								                    src="${cat.image}"
-								                    alt="image">
-
-								            </div>
-
-								            <div
-								                class="media-thumb"
-								                id="show-video">
-
-								                <video>
-
-								                    <source
-								                        src="${cat.video}">
-
-								                </video>
-
-								            </div>
-
-								        </div>
-
-								        `
-
-								        :
-
-								        ''
-
-								    }
-
-								</div>
-		    	                 
-		    	                 <div class="cat-info">
-		    	                     <h1 class="pet-name">${cat.name}</h1>
-		    	                     
-		    	                     <div class="pet-details">
-		    	                         <p class="detail"><span class="label">Age:</span>${(cat.age || "").replace(/^0 years\s*/, "")}</p>
-		    	                         <p class="detail">
-		    	                             <span class="label">Gender:</span> ${cat.gender}
-		    	                             ${
-		    	                            	    ((cat.gender || "").toLowerCase() === "male") ?
-		    	                            	       `
-		    	   <svg class="gender-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-		    	     <circle cx="10" cy="14" r="5" stroke="#6BAEFF" stroke-width="2"/>
-		    	     <path d="M14 10L20 4" stroke="#6BAEFF" stroke-width="2"/>
-		    	     <path d="M16 4H20V8" stroke="#6BAEFF" stroke-width="2"/>
-		    	   </svg>
-		    	 `
-		    	     : `
-		    	   <svg class="gender-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-		    	     <circle cx="12" cy="8" r="7" stroke="#FF6B8B" stroke-width="2"/>
-		    	     <path d="M12 15V22" stroke="#FF6B8B" stroke-width="2"/>
-		    	     <path d="M9 19H15" stroke="#FF6B8B" stroke-width="2"/>
-		    	   </svg>
-		    	 `
-		    	 }
-		    	                         </p>
-		    	                     </div>
-		    	                     
-		    	                     <div class="pet-description">
-		    	                         <p>${cat.description}</p>
-		    	                     </div>
-		    	                     
-		    	                     <div class="more-info">
-		    	                         <p><span class="label">Additional Info: </span>${
-		    	                           cat?.additional
-		    	                         }</p>
-		    	                     </div>
-		    	                     
-		    	                     <div class="action-buttons">
-
-		    	                         <button onclick="window.open('${whatsappLink}', '_blank')" class="whatsapp-button">
-		    	                             Chat on WhatsApp
-		    	                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-		    	                                 <path d="M17.6 6.31999C16.8 5.49999 15.8 4.84999 14.7 4.39999C13.6 3.94999 12.5 3.69999 11.3 3.69999C10 3.69999 8.8 3.99999 7.7 4.49999C6.6 4.99999 5.6 5.69999 4.8 6.49999C4 7.29999 3.3 8.29999 2.9 9.39999C2.4 10.5 2.2 11.7 2.2 12.9C2.2 14.5 2.6 16.1 3.4 17.5L2.1 22.8L7.6 21.5C9 22.3 10.6 22.7 12.2 22.7C13.5 22.7 14.7 22.4 15.8 21.9C16.9 21.4 17.9 20.7 18.7 19.9C19.5 19.1 20.1 18.1 20.6 17C21.1 15.9 21.3 14.7 21.3 13.5C21.3 12.3 21.1 11.1 20.6 10C20.1 8.89999 19.4 7.89999 18.6 7.09999L17.6 6.31999ZM11.3 21.2C9.9 21.2 8.5 20.8 7.3 20.1L6.9 19.8L3.8 20.6L4.6 17.6L4.3 17.2C3.5 15.9 3.1 14.5 3.1 13C3.1 11.9 3.3 10.9 3.7 9.89999C4.1 8.89999 4.7 8.09999 5.4 7.39999C6.1 6.69999 6.9 6.09999 7.9 5.69999C8.9 5.29999 9.9 5.09999 11 5.09999C12 5.09999 13 5.29999 13.9 5.69999C14.8 6.09999 15.6 6.59999 16.3 7.29999C17 7.99999 17.5 8.79999 17.9 9.69999C18.3 10.6 18.5 11.6 18.5 12.6C18.5 13.7 18.3 14.7 17.9 15.7C17.5 16.7 16.9 17.5 16.2 18.2C15.5 18.9 14.7 19.5 13.7 19.9C12.7 20.3 11.7 20.5 10.7 20.5L11.3 21.2ZM15.1 14.5C15.3 14.6 15.4 14.7 15.5 14.8C15.5 14.9 15.5 15.1 15.5 15.2C15.4 15.3 15.4 15.5 15.3 15.6C15.2 15.8 15 15.9 14.8 15.9C14.6 16 14.3 16 14 16C13.7 16 13.4 15.9 13.1 15.8C12.8 15.7 12.5 15.6 12.2 15.4C11.9 15.2 11.6 15 11.3 14.8C11 14.6 10.8 14.3 10.5 14C10.1 13.6 9.79999 13.2 9.49999 12.7C9.19999 12.3 8.99999 11.8 8.79999 11.3C8.69999 11 8.69999 10.7 8.69999 10.4C8.69999 10.2 8.79999 10 8.89999 9.79999C8.99999 9.59999 9.19999 9.5 9.29999 9.4C9.39999 9.3 9.49999 9.29999 9.59999 9.29999H9.79999C9.89999 9.29999 9.99999 9.29999 10.1 9.39999C10.2 9.49999 10.3 9.69999 10.4 9.89999C10.5 10.1 10.7 10.4 10.8 10.7C10.9 10.9 11 11.1 11.1 11.2L11.3 11.5C11.4 11.6 11.4 11.7 11.4 11.9C11.4 12 11.3 12.1 11.3 12.2C11.2 12.3 11.1 12.4 11 12.5C10.9 12.6 10.9 12.7 10.8 12.8C10.7 12.9 10.7 13 10.7 13.1C10.7 13.2 10.8 13.3 10.8 13.4C10.9 13.5 11 13.7 11.1 13.8C11.2 13.9 11.4 14.1 11.6 14.2C11.8 14.4 12 14.5 12.2 14.6C12.3 14.7 12.5 14.7 12.6 14.8C12.7 14.9 12.8 14.9 12.9 14.9C13 14.9 13.1 14.9 13.2 14.8C13.3 14.7 13.4 14.6 13.5 14.5L13.8 14.2C13.9 14.1 14 14 14.2 13.9C14.3 13.8 14.5 13.7 14.6 13.7C14.7 13.7 14.9 13.7 15 13.8C15.1 13.9 15.3 14 15.5 14.1L15.1 14.5Z" fill="white"/>
-		    	                             </svg>
-		    	                         </button>
-		    	                         
-		    	                         
-		    	                         <button onclick="location.href='mailto:${
-		    	                           cat?.ownerEmail
-		    	                         }'" class="email-button">
-		    	                             Send an Email
-		    	                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-		    	                                 <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-		    	                                 <path d="M22 6L12 13L2 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-		    	                             </svg>
-		    	                         </button>
-		    	                       
-		    	                         ${
-		    	                        	 isAdmin
-		    	                             ? ` <button 
-											   data-id="${cat.id}" 
-											   class="approve-button"
-											   ${cat.status == 1 ? "disabled" : ""}
-											   style="${cat.status == 1 ? 'opacity:0.6;cursor:not-allowed; background-color: #d1d1d1;' : ''}">
-											   ${cat.status == 1 ? "Approved" : "Approve Post"}
-											   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-											       <path d="M9 12L11 14L15 10" stroke="#ffffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-											       <path d="M21 12C21 16.4183 17.4183 20 13 20C8.58172 20 5 16.4183 5 12C5 7.58172 8.58172 4 13 4C17.4183 4 21 7.58172 21 12Z" stroke="#ffffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-											   </svg>
-											 </button>
-		    	       <button data-id="${cat.id}" class="reject-button">
-		    	         Reject Post
-		    	         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-		    	           <path d="M15 9L9 15" stroke="#ffffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-		    	           <path d="M9 9L15 15" stroke="#ffffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-		    	           <path d="M21 12C21 16.4183 17.4183 20 13 20C8.58172 20 5 16.4183 5 12C5 7.58172 8.58172 4 13 4C17.4183 4 21 7.58172 21 12Z" stroke="#ffffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-		    	         </svg>
-		    	       </button>`
-		    	                             : ``
-		    	                         }
-
-		    	                        
-		    	                     </div>
-		    	                     
-		    	                     <div class="posted-by">
-		    	                         <h3>Posted by</h3>
-		    	                         <div class="poster-info">
-		    	                             <div class="poster-avatar">
-		    	                                 <img src="${cat.ownerImage}" alt="Poster avatar">
-		    	                             </div>
-		    	                             <div> 
-		    	                             
-		    	                             <p class="poster-name">${cat.ownerName}</p>
-		    	                             <p class="poster-text">${cat.address}</p>
-		    	                             <p class="poster-text">${formattedDate}</p>
-		    	                             </div>
-		    	                         </div>
-		    	                     </div>
-		    	                 </div>
-		    	             </div>
-		    	         </div>
-		    	     </div>
-		    	     <div class="cat-content">
-		    	     <div>
-		    	   <h1 class="poster-name">What is Nekodop?</h1>
-		    	   <p class="poster-text">Nekodop is a community-driven online platform created to make the process of cat adoption easier, faster, and more accessible for everyone. Whether someone is trying to find a new home for their cat or looking to adopt one, Nekodop serves as a bridge that brings both sides together. The platform allows users to post information about cats available for adoption, including details like the cat’s name, age, gender, description, and images. At the same time, potential adopters can freely explore the listings without needing to register or go through complex procedures. Nekodop focuses on simplicity, transparency, and genuine human connection, all while promoting responsible pet ownership. It’s a place where cat lovers come together for one common goal—giving cats a second chance at a happy home.</p>
-		    	   </div>
-		    	   </div>
-		    	   
-		    	          <div class="cat-content"> 
-		    	          <div><h1 class="poster-name">Why is Nekodop useful?</h1>
-		    	   <p class="poster-text">Nekodop is useful because it removes the barriers that often make pet adoption overwhelming or inaccessible. Traditional adoption platforms or organizations may involve a long registration process, interviews, or delays, which can discourage both adopters and those giving up pets. Nekodop solves this by offering a direct, no-hassle solution that connects real people in real time. It’s designed to be lightweight and fast, making it possible to post or find a cat within minutes. Users don’t need to install an app or create an account—they simply visit the website and start browsing or posting. The platform also ensures transparency by allowing adopters to directly view the contact details of the owner, including their WhatsApp number and email, so that any questions or arrangements can be handled personally. By making the process direct and communication-focused, Nekodop creates a trustworthy space for cat adoption while helping reduce the number of abandoned or stray cats in the community..</p></div>
-		    	          </div> 
-		    	          <div class="cat-content"> 
-		    	          <div><h1 class="poster-name">How can we adopt a cat using Nekodop?</h1>
-		    	   <p class="poster-text">Adopting a cat on Nekodop is designed to be as smooth and straightforward as possible. First, you visit the platform and browse through the available cats listed by their current owners. Each listing contains key details such as the cat’s name, age, gender, a photo, and a short description that gives insight into the cat’s personality, background, or special needs. Once you find a cat you’re interested in, you don’t need to sign up or fill out any forms. Instead, you’ll see the owner’s contact information on the post. Nekodop allows you to instantly reach out to the owner through WhatsApp by clicking the provided link, which opens a chat directly, or you can choose to send them an email if that’s more convenient. From there, you can ask questions, set up a meeting, or plan the adoption—all in a way that feels natural and human. This personal approach helps build trust between both parties and ensures the cat finds a loving, suitable new home.</p></div>
-		    	          </div>
-		    	          `;
-						  
-						  if(cat.video){
-
-							const imageBtn =
-							document.getElementById("show-image");
-
-							const videoBtn =
-							document.getElementById("show-video");
-
-							const image =
-							document.getElementById("main-preview-image");
-
-							const video =
-							document.getElementById("main-preview-video");
-
-							if (
-							    imageBtn &&
-							    videoBtn &&
-							    image &&
-							    video
-							) {
-
-							    imageBtn.addEventListener("click", () => {
-
-							        image.classList.remove("hidden");
-
-							        video.classList.add("hidden");
-
-							        video.pause();
-
-							        imageBtn.classList.add("active");
-
-							        videoBtn.classList.remove("active");
-
-							    });
-
-							    videoBtn.addEventListener("click", () => {
-
-							        image.classList.add("hidden");
-
-							        video.classList.remove("hidden");
-
-							        imageBtn.classList.remove("active");
-
-							        videoBtn.classList.add("active");
-
-							    });
-
-							}
-						  }
-
-    } catch (error) {
-        document.getElementById("cat-info").innerHTML = "<p>Failed to load cat details.</p>";
-        console.error("Error fetching cat details:", error);
-    }
-}
-
-function updateAdoptionStatus(catId, isApproved) {
-  var params = new URLSearchParams();
-  params.append("catId", catId);
-  params.append("adoptStatus", isApproved);
-
-  fetch("update-status.jsp", {
-    method: "POST", 
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: params.toString()
-  })
-  .then(function(res) {
-    return res.json();
-  })
-  .then(function(data) {
-    if (data.success) {
-      showToast(
-        "Adoption " + (isApproved === 1 ? "approved" : "rejected") + " successfully.",
-        "success"
-      );
-      setTimeout(function() {
-        window.location.href = "cat-details.jsp?id=" + catId;
-      }, 3000);
-    } else {
-      showToast(data.message || "Update failed.", "error");
-    }
-  })
-  .catch(function(err) {
-    console.error("Error updating adoption:", err);
-    showToast("Something went wrong.", "error");
-  });
-}
-
-
-fetchCatDetails();
-
-var container = document.getElementById("cat-info");
-container.addEventListener("click", function(e) {
-  var approveBtn = e.target.closest(".approve-button");
-  var rejectBtn = e.target.closest(".reject-button");
-
-  if (approveBtn) {
-    if (approveBtn.disabled) return;
-    var catId = approveBtn.getAttribute("data-id");
-    updateAdoptionStatus(catId, 1);
-  } else if (rejectBtn) {
-    var catId = rejectBtn.getAttribute("data-id");
-    updateAdoptionStatus(catId, 2);
+  function escapeHtml(value) {
+    return String(value == null ? "" : value).replace(/[&<>"']/g, function (char) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char];
+    });
   }
-});
 
+  function showMessage(message) {
+    if (window.showToast) showToast(message, "error");
+    else window.alert(message);
+  }
+
+  function getApprovalLabel(status) {
+    return ({ "0": "Pending", "1": "Accepted", "2": "Rejected" })[String(status)] || "Pending";
+  }
+
+  function renderCat(cat) {
+    var isAdopted = String(cat.adopted) === "1";
+    var isOwner = String(currentUserId) === String(cat.ownerId);
+    var ownerImage = cat.ownerImage || "images/profile.png";
+    var age = String(cat.age || "Age unknown").replace(/^0 years\s*/, "");
+    var phone = String(cat.phone || "").replace(/\D/g, "");
+    if (phone.charAt(0) === "0") phone = phone.substring(1);
+    var whatsappUrl = "https://wa.me/88" + encodeURIComponent(phone) +
+      "?text=" + encodeURIComponent("Hello, I would like to ask about " + cat.name + " on NekoDop.");
+    var status = String(cat.status == null ? "0" : cat.status);
+    var image = escapeHtml(cat.image || "images/No_Cats.png");
+    var video = escapeHtml(cat.video || "");
+    var adminActions = isAdmin
+      ? "<div class='approval-controls' aria-label='Admin post approval controls'>" +
+          "<p>Post status: <strong class='approval-status status-" + status + "'>" + escapeHtml(getApprovalLabel(status)) + "</strong></p>" +
+          "<button type='button' class='approve-button' data-status='1' " + (status === "1" ? "disabled" : "") + ">Accept</button>" +
+          "<button type='button' class='reject-button' data-status='2' " + (status === "2" ? "disabled" : "") + ">Reject</button>" +
+        "</div>"
+      : "";
+
+    var favoriteButton = "<button type='button' class='favorite-button detail-favorite' data-cat-id='" +
+      escapeHtml(cat.id) + "' aria-label='" + (cat.isFavorite ? "Remove from favorites" : "Add to favorites") +
+      "' aria-pressed='" + Boolean(cat.isFavorite) + "' title='" +
+      (cat.isFavorite ? "Remove from favorites" : "Add to favorites") + "'><svg viewBox='0 0 24 24' aria-hidden='true'><path d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'></path></svg></button>";
+
+    var adoptButton = !isOwner && !isAdopted
+      ? "<button type='button' class='adopt-button' data-cat-id='" + escapeHtml(cat.id) + "'>Mark adopted</button>"
+      : "";
+
+    catInfo.innerHTML = "<article class='cat-content'>" +
+      "<div class='cat-image'><div id='preview-container'>" +
+        "<img id='main-preview-image' class='main-preview" + (video ? "" : " image-only") + "' src='" + image + "' alt='" + escapeHtml(cat.name) + "'>" +
+        (video ? "<video id='main-preview-video' class='main-preview hidden' controls><source src='" + video + "'></video>" : "") +
+      "</div>" +
+      (video ? "<div class='media-selector'><button type='button' class='media-thumb active' id='show-image'><img src='" + image + "' alt='Show image'></button><button type='button' class='media-thumb' id='show-video'><i class='fa-solid fa-circle-play' aria-label='Show video'></i></button></div>" : "") +
+      "</div>" +
+      "<div class='cat-info-content'>" +
+        "<h1 class='pet-name'>" + escapeHtml(cat.name) + "</h1>" +
+        "<div class='pet-details'>" +
+          "<p class='detail'><span class='label'>Age:</span> " + escapeHtml(age) + "</p>" +
+          "<p class='detail'><span class='label'>Gender:</span> " + escapeHtml(cat.gender || "Unknown") + "</p>" +
+          "<p class='detail'><span class='label'>Breed:</span> " + escapeHtml(cat.breed || "Unknown") + "</p>" +
+          "<p class='detail'><span class='label'>Adoption:</span> " + (isAdopted ? "Adopted" : "Available") + "</p>" +
+          (isAdopted && cat.adopterName ? "<p class='detail'><span class='label'>Adopted by:</span> " + escapeHtml(cat.adopterName) + "</p>" : "") +
+        "</div>" +
+        "<div class='pet-description'><p>" + escapeHtml(cat.description || "No description provided.") + "</p></div>" +
+        "<div class='more-info'><p><span class='label'>Additional info:</span> " + escapeHtml(cat.additional || "None") + "</p></div>" +
+        "<div class='action-buttons'>" + favoriteButton +
+          "<a class='whatsapp-button' href='" + whatsappUrl + "' target='_blank' rel='noopener noreferrer' data-cat-id='" + escapeHtml(cat.id) + "'><i class='fa-brands fa-whatsapp' aria-hidden='true'></i> Chat on WhatsApp</a>" +
+          "<a class='email-button' href='mailto:" + escapeHtml(cat.ownerEmail || "") + "'><i class='fa-regular fa-envelope' aria-hidden='true'></i> Send an Email</a>" +
+          adoptButton + adminActions +
+        "</div>" +
+        "<section class='posted-by'><h3>Posted by</h3><div class='poster-info'>" +
+          "<div class='poster-avatar'><img src='" + escapeHtml(ownerImage) + "' alt='Owner profile'></div>" +
+          "<div><p class='poster-name'>" + escapeHtml(cat.ownerName || "Cat owner") + "</p>" +
+          "<p class='poster-text'>" + escapeHtml(cat.address || "") + "</p>" +
+          "<p class='poster-text'>" + escapeHtml(cat.created_at ? new Date(cat.created_at).toLocaleDateString() : "") + "</p></div>" +
+        "</div></section>" +
+      "</div></article>";
+
+    if (video) {
+      var imageButton = document.getElementById("show-image");
+      var videoButton = document.getElementById("show-video");
+      var imageElement = document.getElementById("main-preview-image");
+      var videoElement = document.getElementById("main-preview-video");
+      imageButton.addEventListener("click", function () {
+        imageElement.classList.remove("hidden");
+        videoElement.classList.add("hidden");
+        videoElement.pause();
+        imageButton.classList.add("active");
+        videoButton.classList.remove("active");
+      });
+      videoButton.addEventListener("click", function () {
+        imageElement.classList.add("hidden");
+        videoElement.classList.remove("hidden");
+        videoButton.classList.add("active");
+        imageButton.classList.remove("active");
+      });
+    }
+  }
+
+  function postStatus(catId, field, value) {
+    return fetch("update-status.jsp", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ catId: catId, [field]: value })
+    }).then(function (response) { return response.json(); });
+  }
+
+  catInfo.addEventListener("click", function (event) {
+    var favoriteButton = event.target.closest(".detail-favorite");
+    var approvalButton = event.target.closest(".approve-button, .reject-button");
+    var adoptButton = event.target.closest(".adopt-button");
+    var chatLink = event.target.closest(".whatsapp-button");
+
+    if (favoriteButton) {
+      event.preventDefault();
+      fetch("toggle-favorite.jsp", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ catId: favoriteButton.dataset.catId })
+      }).then(function (response) { return response.json(); }).then(function (result) {
+        if (!result.success) return showMessage(result.message || "Could not update favorite.");
+        favoriteButton.setAttribute("aria-pressed", String(result.isFavorite));
+        favoriteButton.setAttribute("aria-label", result.isFavorite ? "Remove from favorites" : "Add to favorites");
+        favoriteButton.title = result.isFavorite ? "Remove from favorites" : "Add to favorites";
+      }).catch(function () { showMessage("Could not update favorite."); });
+    } else if (approvalButton) {
+      event.preventDefault();
+      if (!isAdmin || approvalButton.disabled) return;
+      postStatus(catId, "approvalStatus", approvalButton.dataset.status).then(function (result) {
+        if (!result.success) return showMessage(result.message || "Could not update post status.");
+        window.location.reload();
+      }).catch(function () { showMessage("Could not update post status."); });
+    } else if (adoptButton) {
+      event.preventDefault();
+      postStatus(adoptButton.dataset.catId, "adoptStatus", "1").then(function (result) {
+        if (!result.success) return showMessage(result.message || "Could not mark this cat adopted.");
+        window.location.reload();
+      }).catch(function () { showMessage("Could not mark this cat adopted."); });
+    } else if (chatLink) {
+      fetch("record-cat-view.jsp", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ catId: chatLink.dataset.catId }),
+        keepalive: true
+      }).catch(function (error) { console.error("Could not record chat view:", error); });
+    }
+  });
+
+  if (!catId) {
+    catInfo.textContent = "Cat not found.";
+    return;
+  }
+
+  fetch("get-cat.jsp?id=" + encodeURIComponent(catId))
+    .then(function (response) { return response.json(); })
+    .then(function (cat) {
+      if (!cat || cat.error || !cat.id) {
+        catInfo.textContent = cat && cat.error ? cat.error : "Cat not found.";
+        return;
+      }
+      if (isAdmin) {
+        var morePostsLink = document.createElement("a");
+        morePostsLink.href = "dashboard.jsp#posts";
+        morePostsLink.className = "return-btn";
+        morePostsLink.innerHTML = "<i class='fa-solid fa-file'></i> More Posts";
+        document.getElementById("nav-home").appendChild(morePostsLink);
+      }
+      renderCat(cat);
+    })
+    .catch(function (error) {
+      console.error("Error fetching cat details:", error);
+      catInfo.textContent = "Failed to load cat details.";
+    });
 });

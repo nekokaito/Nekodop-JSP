@@ -10,6 +10,24 @@
   padding: 20px;
 }
 
+.favorite-button.detail-favorite {
+  position: static;
+  display: inline-grid;
+  vertical-align: middle;
+  margin-right: 10px;
+  flex: 0 0 50px;
+}
+
+.listing-views {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #d8cbe7;
+}
+
+.listing-views ul {
+  margin: 10px 0 0 20px;
+}
+
 .header {
   padding: 10px 0;
   margin-bottom: 20px;
@@ -62,6 +80,61 @@
   gap: 20px;
 }
 
+.cat-info-content {
+  flex: 1.5;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.approval-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
+}
+
+.approval-controls p {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.approval-status {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #eee8f6;
+}
+
+.approval-status.status-1 {
+  background: #d9f2e3;
+  color: #23653b;
+}
+
+.approval-status.status-2 {
+  background: #ffe1df;
+  color: #8e2d27;
+}
+
+.approve-button:disabled,
+.reject-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.adopt-button {
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 8px;
+  background: #8e7bdb;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 @media (max-width: 768px) {
   .profile-content {
     flex-direction: row;
@@ -69,8 +142,8 @@
   .cat-content {
     flex-direction: column;
   }
-  .cat-info {
-    flex-direction: row;
+  .cat-info-content {
+    width: 100%;
   }
 }
 

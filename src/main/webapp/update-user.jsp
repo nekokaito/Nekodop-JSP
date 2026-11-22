@@ -18,6 +18,7 @@
 
     String name = json.getString("name");
     String email = json.getString("email");
+    String phoneNumber = json.optString("phoneNumber", "").trim();
     String profilePicture = json.getString("profilePicture");
 
     String userId = (String) session.getAttribute("userId");
@@ -28,20 +29,22 @@
     ResultSet rs = null;
     try {
         conn = DBConnection.getConnection();
-        ps = conn.prepareStatement("UPDATE users SET name=?, email=?, profile_picture=? WHERE id=?");
+        ps = conn.prepareStatement("UPDATE users SET name=?, email=?, phone_number=?, profile_picture=? WHERE id=?");
         ps.setString(1, name);
         ps.setString(2, email);
-        ps.setString(3, profilePicture);
-        ps.setString(4, userId);
+        ps.setString(3, phoneNumber);
+        ps.setString(4, profilePicture);
+        ps.setString(5, userId);
 
         int rows = ps.executeUpdate();
         if (rows > 0) {
-        	ps = conn.prepareStatement("SELECT name, email, profile_picture FROM users WHERE id=?");
+            ps = conn.prepareStatement("SELECT name, email, phone_number, profile_picture FROM users WHERE id=?");
             ps.setString(1, userId);
             rs = ps.executeQuery();
             if (rs.next()) {
                 session.setAttribute("userName", rs.getString("name"));
                 session.setAttribute("userEmail", rs.getString("email"));
+                session.setAttribute("userPhone", rs.getString("phone_number"));
                 session.setAttribute("userProfilePicture", rs.getString("profile_picture"));
             }
 

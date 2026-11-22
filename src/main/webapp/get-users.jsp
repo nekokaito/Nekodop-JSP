@@ -5,7 +5,7 @@
     JSONArray usersArray = new JSONArray();
 
     try (Connection conn = DBConnection.getConnection()) {
-        String sql = "SELECT * FROM users";
+        String sql = "SELECT id, name, email, phone_number, profile_picture, user_role, created_at FROM users";
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
@@ -14,6 +14,7 @@
                 user.put("id", rs.getString("id"));
                 user.put("name", rs.getString("name"));
                 user.put("email", rs.getString("email"));
+                user.put("phone_number", rs.getString("phone_number"));
                 user.put("profile_picture", rs.getString("profile_picture"));
                 user.put("user_role", rs.getString("user_role"));
                 user.put("created_at", rs.getString("created_at"));

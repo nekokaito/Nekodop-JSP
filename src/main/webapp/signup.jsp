@@ -17,6 +17,7 @@
         String userId = java.util.UUID.randomUUID().toString();
         String name = request.getParameter("name");
         String email = request.getParameter("email");
+        String phoneNumber = request.getParameter("phone_number");
         String password = request.getParameter("password");
         String rePassword = request.getParameter("re-password");
         String profilePhotoUrl = request.getParameter("profilePhotoUrl");  
@@ -35,8 +36,8 @@
             passwordError = "Password must contain at least one special character.";
         }
 
-        if (name == null || email == null || password == null || rePassword == null ||
-            name.trim().isEmpty() || email.trim().isEmpty() || password.isEmpty() || rePassword.isEmpty()) {
+        if (name == null || email == null || phoneNumber == null || password == null || rePassword == null ||
+            name.trim().isEmpty() || email.trim().isEmpty() || phoneNumber.trim().isEmpty() || password.isEmpty() || rePassword.isEmpty()) {
             message = "All fields are required!";
         } else if (!password.equals(rePassword)) {
             message = "Passwords do not match!";
@@ -63,14 +64,15 @@
 
                     // Insert user data
                     ps = conn.prepareStatement(
-                        "INSERT INTO users (id, name, email, password, profile_picture, user_role, created_at) " +
-                        "VALUES (?, ?, ?, ?, ?, 'user', CURRENT_TIMESTAMP)"
+                        "INSERT INTO users (id, name, email, phone_number, password, profile_picture, user_role, created_at) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, 'user', CURRENT_TIMESTAMP)"
                     );
                     ps.setString(1, userId);
                     ps.setString(2, name);
                     ps.setString(3, email);
-                    ps.setString(4, password); 
-                    ps.setString(5, profilePhotoUrl);
+                    ps.setString(4, phoneNumber.trim());
+                    ps.setString(5, password);
+                    ps.setString(6, profilePhotoUrl);
 
                     int inserted = ps.executeUpdate();
 
@@ -90,6 +92,7 @@
                         session.setAttribute("userId", userId);
                         session.setAttribute("userName", name);
                         session.setAttribute("userEmail", email);
+                        session.setAttribute("userPhone", phoneNumber.trim());
                         session.setAttribute("userProfilePicture", profilePhotoUrl);
                         session.setAttribute("userRole", userRole);
                         session.setAttribute("createdAt", createdAt);
@@ -154,6 +157,10 @@
           <div class="form-group">
             <label for="email">Email Address</label>
             <input type="email" id="email" name="email" required/>
+          </div>
+          <div class="form-group">
+            <label for="phone-number">Phone Number</label>
+            <input type="tel" id="phone-number" name="phone_number" autocomplete="tel" required />
           </div>
           <div class="form-group">
             <label for="profile-photo">Upload Profile Photo</label>

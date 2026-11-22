@@ -37,6 +37,7 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
                     session.setAttribute("userId", rs.getString("id"));
                     session.setAttribute("userName", rs.getString("name"));
                     session.setAttribute("userEmail", rs.getString("email"));
+                    session.setAttribute("userPhone", rs.getString("phone_number"));
                     session.setAttribute("userProfilePicture", rs.getString("profile_picture"));
                     session.setAttribute("userRole", rs.getString("user_role"));
                     session.setAttribute("createdAt", rs.getString("created_at"));

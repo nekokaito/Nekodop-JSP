@@ -16,16 +16,10 @@ if (userId == null) {
     out.print(json.toString());
     return;
 }
-// check admin
-if (!isAdmin) {
-    json.put("success", false);
-    json.put("message", "Only admin can update status");
-    out.print(json.toString());
-    return;
-}
 // params
 String catId = request.getParameter("catId");
 String adoptStatus = request.getParameter("adoptStatus");
+String approvalStatus = request.getParameter("approvalStatus");
 
 
 
@@ -36,25 +30,57 @@ if (catId == null) {
     return;
 }
 
-if (adoptStatus == null) adoptStatus = "0";
-
-try {
-    Connection conn = DBConnection.getConnection();
-    String sql = "UPDATE cats SET is_approved = ? WHERE id = ?";
-    PreparedStatement ps = conn.prepareStatement(sql);
-
-    ps.setString(1, adoptStatus);
-    ps.setString(2, catId);
-
-    int rows = ps.executeUpdate();
-    success = rows > 0;
-
-    if (!success) {
-        message = "Update failed or not authorized";
+try (Connection conn = DBConnection.getConnection()) {
+    int rows;
+    if (approvalStatus != null) {
+        if (!isAdmin) {
+            json.put("success", false);
+            json.put("message", "Only admin can update approval status");
+            out.print(json.toString());
+            return;
+        }
+        if (!"0".equals(approvalStatus) && !"1".equals(approvalStatus) && !"2".equals(approvalStatus)) {
+            json.put("success", false);
+            json.put("message", "Approval status must be 0 (pending), 1 (accepted), or 2 (rejected).");
+            out.print(json.toString());
+            return;
+        }
+        try (PreparedStatement ps = conn.prepareStatement("UPDATE cats SET is_approved = ? WHERE id = ?")) {
+            ps.setString(1, approvalStatus);
+            ps.setString(2, catId);
+            rows = ps.executeUpdate();
+        }
+    } else if ("1".equals(adoptStatus)) {
+        try (PreparedStatement ps = conn.prepareStatement(
+                "UPDATE cats SET adopted_by = ?, adopted_at = SYSTIMESTAMP WHERE id = ? AND adopted_by IS NULL")) {
+            ps.setString(1, userId);
+            ps.setString(2, catId);
+            rows = ps.executeUpdate();
+        }
+    } else if ("0".equals(adoptStatus)) {
+        try (PreparedStatement ps = conn.prepareStatement(
+                "UPDATE cats SET adopted_by = NULL, adopted_at = NULL WHERE id = ?")) {
+            ps.setString(1, catId);
+            rows = ps.executeUpdate();
+        }
+    } else {
+        json.put("success", false);
+        json.put("message", "Invalid adoption status");
+        out.print(json.toString());
+        return;
     }
 
-    ps.close();
-    conn.close();
+    success = rows > 0;
+    if (!success) message = "Cat was not updated; it may already be adopted.";
+} catch (SQLException e) {
+    if (e.getErrorCode() == 2290 || (e.getMessage() != null && e.getMessage().contains("ORA-02290"))) {
+        message = approvalStatus != null
+            ? "The database must allow rejected status 2. Run sql/allow-rejected-cat-status.sql."
+            : "You cannot adopt your own cat.";
+    } else {
+        message = "Database error: " + e.getMessage();
+        e.printStackTrace();
+    }
 } catch (Exception e) {
     message = "Database error: " + e.getMessage();
     e.printStackTrace();

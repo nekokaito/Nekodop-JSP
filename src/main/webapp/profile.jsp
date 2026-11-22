@@ -17,6 +17,7 @@ if (userId == null) {
 // Get user data from session
 String userName = (String) session.getAttribute("userName");
 String userEmail = (String) session.getAttribute("userEmail");
+String userPhone = (String) session.getAttribute("userPhone");
 String userProfilePicture = (String) session.getAttribute("userProfilePicture");
 String userRole = (String) session.getAttribute("userRole");
 boolean isAdmin = "admin".equals(userRole);
@@ -73,7 +74,6 @@ try {
         cat.put("age", rs.getString("cat_age"));
         cat.put("gender", rs.getString("cat_gender"));
         cat.put("description", rs.getString("cat_description"));
-        cat.put("phone", rs.getString("owner_phone"));
         cat.put("address", rs.getString("owner_address"));
         cat.put("additional", rs.getString("additional_information"));
         cat.put("status", rs.getString("is_approved")); // 0-pending, 1-approved, 2-rejected
@@ -85,6 +85,46 @@ try {
     rs.close();
     ps.close();
     conn.close();
+} catch (Exception e) {
+    e.printStackTrace();
+}
+
+List<Map<String, String>> favoriteCats = new ArrayList<>();
+List<Map<String, String>> adoptedCats = new ArrayList<>();
+try (Connection conn = DBConnection.getConnection();
+     PreparedStatement ps = conn.prepareStatement(
+         "SELECT c.id, c.cat_name, c.cat_image, c.cat_age, c.cat_gender, c.cat_breed " +
+         "FROM cats c JOIN user_favorite_cats f ON f.cat_id = c.id WHERE f.user_id = ?")) {
+    ps.setString(1, userId);
+    try (ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+            Map<String, String> cat = new HashMap<>();
+            cat.put("id", rs.getString("id"));
+            cat.put("name", rs.getString("cat_name"));
+            cat.put("image", rs.getString("cat_image"));
+            cat.put("age", rs.getString("cat_age"));
+            cat.put("gender", rs.getString("cat_gender"));
+            cat.put("breed", rs.getString("cat_breed"));
+            favoriteCats.add(cat);
+        }
+    }
+}
+try (Connection conn = DBConnection.getConnection();
+     PreparedStatement ps = conn.prepareStatement(
+         "SELECT id, cat_name, cat_image, cat_age, cat_gender, cat_breed FROM cats WHERE adopted_by = ?")) {
+    ps.setString(1, userId);
+    try (ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+            Map<String, String> cat = new HashMap<>();
+            cat.put("id", rs.getString("id"));
+            cat.put("name", rs.getString("cat_name"));
+            cat.put("image", rs.getString("cat_image"));
+            cat.put("age", rs.getString("cat_age"));
+            cat.put("gender", rs.getString("cat_gender"));
+            cat.put("breed", rs.getString("cat_breed"));
+            adoptedCats.add(cat);
+        }
+    }
 } catch (Exception e) {
     e.printStackTrace();
 }
@@ -185,6 +225,7 @@ try {
                             <span class="edit-profile-btn"><i class="fa-solid fa-pen-to-square"></i></span>
                         </div>
                         <p><i class="fa-solid fa-at"></i> <%= userEmail != null ? userEmail : "email@example.com" %></p>
+                        <p><i class="fa-solid fa-phone"></i> <%= userPhone != null ? userPhone : "Phone number not provided" %></p>
                         <% if (!joinTime.isEmpty()) { %>
                             <p><i class="fa-regular fa-calendar"></i> <%= joinTime %></p>
                         <% } %>
@@ -216,6 +257,10 @@ try {
                                         <label for="edit-email">Email</label>
                                         <input type="email" id="edit-email" value="<%= userEmail != null ? userEmail : "" %>">
                                         <span class="error" id="edit-email-error"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="edit-phone-number">Phone Number</label>
+                                        <input type="tel" id="edit-phone-number" value="<%= userPhone != null ? userPhone : "" %>" autocomplete="tel" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="edit-profile-picture">Profile Picture</label>
@@ -256,6 +301,8 @@ try {
                 <ul class="profile-links">
                     <li id="post-tab" class="active">Post</li>
                     <li id="my-cats-tab">My Cats</li>
+                    <li id="favorite-cats-tab">Favorite Cats</li>
+                    <li id="adopted-cats-tab">Adopted Cats</li>
                 </ul>
 
                 <!-- Post Section -->
@@ -286,9 +333,14 @@ try {
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="phone">Phone Number</label>
-                                <input type="text" id="phone" required placeholder="01XXXXXXXXX - Only WhatsApp"/>
-                                <span class="error" id="error-phone"></span>
+                                <label for="cat-breed">Breed</label>
+                                <select id="cat-breed" required>
+                                    <option value="" disabled selected>Select breed</option>
+                                    <option value="Deshi">Deshi</option>
+                                    <option value="Persian">Persian</option>
+                                    <option value="Mixed">Mixed</option>
+                                    <option value="Others">Others</option>
+                                </select>
                             </div>
                         </div>
                         <div class="form-group">
@@ -402,16 +454,14 @@ try {
                                         </select>
                                     </div>
                                     <div class="form-group">
-    <label for="edit-status">Adopt Status</label>
-    <select id="edit-status" required>
-        <option value="0" selected>Not Yet</option>
-        <option value="1">Yes Adopted</option>
-    </select>
-</div>
-                                    <div class="form-group">
-                                        <label for="edit-phone">Phone Number</label>
-                                        <input type="text" id="edit-phone" required />
-                                        <span class="error" id="edit-error-phone"></span>
+                                        <label for="edit-cat-breed">Breed</label>
+                                        <select id="edit-cat-breed" required>
+                                            <option value="" disabled>Select breed</option>
+                                            <option value="Deshi">Deshi</option>
+                                            <option value="Persian">Persian</option>
+                                            <option value="Mixed">Mixed</option>
+                                            <option value="Others">Others</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -442,6 +492,30 @@ try {
                             </form>
                         </div>
                     </div>
+                </div>
+
+                <div id="favorite-cats-section" class="profile-cat-list" style="display: none;">
+                    <h2>Favorite Cats</h2>
+                    <% if (favoriteCats.isEmpty()) { %>
+                        <p>You have not favorited any cats yet.</p>
+                    <% } else { for (Map<String, String> cat : favoriteCats) { %>
+                        <a class="profile-cat-item" href="cat-details.jsp?id=<%= cat.get("id") %>">
+                            <img src="<%= cat.get("image") %>" alt="<%= cat.get("name") %>" />
+                            <span><strong><%= cat.get("name") %></strong><br /><%= cat.get("breed") %> · <%= cat.get("age") %> · <%= cat.get("gender") %></span>
+                        </a>
+                    <% } } %>
+                </div>
+
+                <div id="adopted-cats-section" class="profile-cat-list" style="display: none;">
+                    <h2>Adopted Cats</h2>
+                    <% if (adoptedCats.isEmpty()) { %>
+                        <p>You have not adopted any cats yet.</p>
+                    <% } else { for (Map<String, String> cat : adoptedCats) { %>
+                        <a class="profile-cat-item" href="cat-details.jsp?id=<%= cat.get("id") %>">
+                            <img src="<%= cat.get("image") %>" alt="<%= cat.get("name") %>" />
+                            <span><strong><%= cat.get("name") %></strong><br /><%= cat.get("breed") %> · <%= cat.get("age") %> · <%= cat.get("gender") %></span>
+                        </a>
+                    <% } } %>
                 </div>
             </div>
         </main>

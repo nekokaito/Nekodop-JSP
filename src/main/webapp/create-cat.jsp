@@ -1,36 +1,39 @@
 <%@ page import="java.sql.*, java.util.UUID" %>
 <%@ page import="utils.DBConnection" %>
+<%@ page import="org.json.JSONObject" %>
 <%
 // Set content type to JSON
-response.setContentType("application/json");
+response.setContentType("application/json;charset=UTF-8");
 
 // Initialize variables
 boolean success = false;
 String message = "";
+JSONObject responseJson = new JSONObject();
 String userId = (String) session.getAttribute("userId");
-String userName = (String)  session.getAttribute("userName");
-String userEmail = (String) session.getAttribute("userEmail");
-String userProfilePicture = (String) session.getAttribute("userProfilePicture");
 
 // Check user session
 if (userId == null) {
-    out.print("{\"success\": false, \"message\": \"User not logged in\"}");
+    responseJson.put("success", false);
+    responseJson.put("message", "User not logged in");
+    out.print(responseJson.toString());
     return;
 }
 
 // Get parameters safely
 String catName = request.getParameter("catName");
 String catGender = request.getParameter("catGender");
+String catBreed = request.getParameter("catBreed");
 String catDescription = request.getParameter("catDescription");
 String ownerAddress = request.getParameter("ownerAddress");
-String phone = request.getParameter("ownerPhone");
 String additionalInfo = request.getParameter("additionalInfo");
 String catImageUrl = request.getParameter("catImageUrl");
 String videoUrl = request.getParameter("catVideoUrl");
 
 // Validate parameters
-if (catName == null || catGender == null || catImageUrl == null) {
-    out.print("{\"success\": false, \"message\": \"Missing required parameters\"}");
+if (catName == null || catGender == null || catBreed == null || catImageUrl == null) {
+    responseJson.put("success", false);
+    responseJson.put("message", "Missing required parameters");
+    out.print(responseJson.toString());
     return;
 }
 
@@ -58,7 +61,7 @@ if (month > 0) {
 if (catAge.isEmpty()) catAge = "0 months";
 
     // Prepare SQL
-    String sql = "INSERT INTO cats (id, cat_owner_id, cat_name, cat_image, cat_video, cat_age, cat_gender, cat_description, owner_phone, owner_address, additional_information, owner_name, owner_email, owner_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    String sql = "INSERT INTO cats (id, cat_owner_id, cat_name, cat_image, cat_video, cat_age, cat_gender, cat_breed, cat_description, owner_address, additional_information) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     PreparedStatement ps = conn.prepareStatement(sql);
     
     // Set parameters
@@ -69,13 +72,10 @@ if (catAge.isEmpty()) catAge = "0 months";
     ps.setString(5, videoUrl != null && !videoUrl.isEmpty() ? videoUrl: null);
     ps.setString(6, catAge.trim());
     ps.setString(7, catGender);
-    ps.setString(8, catDescription);
-    ps.setString(9, phone != null ? phone : "");
+    ps.setString(8, catBreed);
+    ps.setString(9, catDescription);
     ps.setString(10, ownerAddress != null ? ownerAddress : "");
     ps.setString(11, additionalInfo != null ? additionalInfo : "");
-    ps.setString(12, userName);
-    ps.setString(13, userEmail);
-    ps.setString(14, userProfilePicture);
 
     // Execute and check result
     int rows = ps.executeUpdate();
@@ -89,7 +89,7 @@ if (catAge.isEmpty()) catAge = "0 months";
     e.printStackTrace();
 }
 
-// Return JSON response
-out.print("{\"success\": " + success + ", \"message\": \"" + 
-        (message != null ? message.replace("\"", "\\\"") : "") + "\"}");
+responseJson.put("success", success);
+responseJson.put("message", message != null ? message : "");
+out.print(responseJson.toString());
 %>

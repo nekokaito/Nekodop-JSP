@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
                   ${user.user_role || "Unknown Role"}
                 </span>
               </td>
+              <td>${user.phone_number || "N/A"}</td>
               <td>${user.created_at || "N/A"}</td>
               <td>
                 ${ user.user_role !== "admin"
@@ -113,6 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
   
   
   var allCats = [];
+  var postsLoadError = "";
 
   // fetch all cats from jsp
   function fetchPosts() {
@@ -121,12 +123,19 @@ document.addEventListener('DOMContentLoaded', function () {
         return res.json();
       })
       .then(function (data) {
-        
+        if (data && !Array.isArray(data) && data.error) {
+          throw new Error(data.error);
+        }
+        if (data && data.length && data[0].error) {
+          throw new Error(data[0].error);
+        }
+        postsLoadError = "";
         allCats = data || [];
         return allCats;
       })
       .catch(function (error) {
         console.error("Error fetching posts:", error);
+        postsLoadError = error.message || "Could not load posts.";
         return [];
       });
   }
@@ -185,6 +194,15 @@ document.addEventListener('DOMContentLoaded', function () {
     // clear
     container.innerHTML = "";
 
+    if (postsLoadError) {
+      container.style.height = "auto";
+      var errorMessage = document.createElement("p");
+      errorMessage.className = "posts-error";
+      errorMessage.textContent = "Could not load posts: " + postsLoadError;
+      container.appendChild(errorMessage);
+      return;
+    }
+
     if (!catList || catList.length === 0) {
       container.style.height = "100vh";
       container.innerHTML =
@@ -199,31 +217,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
     catList.forEach(function (cat) {
       // optimize cloudinary url
-      var optimizedImage = cat.image.replace(
-        "/upload/",
-        "/upload/f_webp,q_40/"
-      );
+      var optimizedImage = cat.image ? cat.image.replace("/upload/", "/upload/f_webp,q_40/") : "images/No_Cats.png";
+      var age = String(cat.age || "Age unknown").replace(/^0 years\s*/, "");
+      var isAdopted = String(cat.adopted) === "1";
+      var approvalLabel = cat.status === "1" ? "Approved" : cat.status === "2" ? "Rejected" : "Pending";
 
       var card = document.createElement("a");
       card.href = "cat-details.jsp?id=" + cat.id;
       card.className = "card";
-      card.innerHTML = 	  `
+      card.innerHTML = `
 	        <div class="cat-img">
 	          <img src="${optimizedImage}" alt="${cat.name}" loading="lazy" />
 	        </div>
 	        <div class="card-body">
 	          <div class="card-text">
-	            <h2>${cat.name}</h2>
-	            <p>${cat.age.replace(/^0 years\s*/, "")}</p>
-	            <p>${cat.gender}</p>
+	            <h2>${cat.name || "Unnamed cat"}</h2>
+	            <p><strong>Age:</strong> ${age}</p>
+	            <p><strong>Gender:</strong> ${cat.gender || "Unknown"}</p>
+	            <p><strong>Breed:</strong> <span class="badge badge-breed">${cat.breed || cat.cat_breed || "Unknown"}</span></p>
+	            <p><strong>Owner:</strong> ${cat.ownerName || "Unknown"}</p>
+	            <p><strong>Phone:</strong> ${cat.phone || "N/A"}</p>
+	            <p><strong>Approval:</strong> <span class="badge badge-approval">${approvalLabel}</span></p>
+	            <p><strong>Adoption:</strong> <span class="badge ${isAdopted ? "badge-adopted" : "badge-available"}">${isAdopted ? "Adopted" : "Available"}</span></p>
+	            ${isAdopted ? `<p><strong>Adopted by:</strong> ${cat.adopterName || cat.adoptedBy || "Unknown"}</p><p><strong>Adopted at:</strong> ${cat.adoptedAt || "Unknown"}</p>` : ""}
 	          </div>
 	          <div class="owner-img">
-	            <img id="owner-${cat.id}" src="${cat.ownerImage}" alt="Owner of ${
-	        cat.cat_name
-	      }" loading="lazy" />
+	            <img id="owner-${cat.id}" src="${cat.ownerImage || "images/profile.png"}" alt="Owner of ${cat.name || "cat"}" loading="lazy" />
 	          </div>
 	        </div>
-	      `;;
+	      `;
 
       container.appendChild(card);
 

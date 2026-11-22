@@ -33,7 +33,7 @@ if (userId == null) {
     <link rel="stylesheet" href="styles/hero.css" />
     <link rel="stylesheet" href="styles/footer.css" />
     <link rel="stylesheet" href="styles/form.css" />
-    <link rel="stylesheet" href="styles/card.css" />
+    <link rel="stylesheet" href="styles/card.css?v=2" />
     <link rel="stylesheet" href="styles/preloader.css" />
     <link rel="stylesheet" href="styles/feature.css" />
     <link rel="stylesheet" href="styles/support.css" />
@@ -109,10 +109,8 @@ if (userId == null) {
         <div id="cat-info">
           <div class="loader-container">
             <span class="loader loader-white"></span>
-            <div>
+          </div>
         </div>
-      </div>
-    </div>
     </div>
     <!-- Footer Section -->
       <footer id="footer-content" class="footer">
@@ -145,7 +143,8 @@ if (userId == null) {
     <script src="scripts/user-nav.js"></script>
     <script>
       const isAdmin = <%= isAdmin %>;
+      const currentUserId = "<%= userId.replace("\\", "\\\\").replace("\"", "\\\"") %>";
    </script>
-    <script src="scripts/cat-details.js"></script>
+    <script src="scripts/cat-details.js?v=2"></script>
 </body>
 </html>

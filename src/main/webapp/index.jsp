@@ -30,7 +30,7 @@ boolean isAdmin = "admin".equals(userRole);
     <link rel="stylesheet" href="styles/hero.css" />
     <link rel="stylesheet" href="styles/footer.css" />
     <link rel="stylesheet" href="styles/form.css" />
-    <link rel="stylesheet" href="styles/card.css" />
+    <link rel="stylesheet" href="styles/card.css?v=2" />
     <link rel="stylesheet" href="styles/preloader.css" />
     <link rel="stylesheet" href="styles/feature.css" />
     <link rel="stylesheet" href="styles/support.css" />
@@ -245,6 +245,16 @@ boolean isAdmin = "admin".equals(userRole);
                         </select>
                     </label>
 
+                    <label class="age-filter" for="breed-filter">Breed
+                        <select id="breed-filter">
+                            <option value="All">All</option>
+                            <option value="Deshi">Deshi</option>
+                            <option value="Persian">Persian</option>
+                            <option value="Mixed">Mixed</option>
+                            <option value="Others">Others</option>
+                        </select>
+                    </label>
+
                     <div id="gender-filters">
                         <label><input type="checkbox" id="male-filter" /> Male</label>
                         <label><input type="checkbox" id="female-filter" /> Female</label>
@@ -407,7 +417,7 @@ boolean isAdmin = "admin".equals(userRole);
     <script src="scripts/reponsive.js"></script>
     <script src="scripts/toast.js"></script>
     <script src="scripts/main.js"></script>
-    <script src="scripts/explore.js"></script>
+    <script src="scripts/explore.js?v=2"></script>
     <script src="scripts/video.js"></script>
     <script src="scripts/user-nav.js"></script>
     

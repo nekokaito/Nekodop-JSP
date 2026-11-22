@@ -14,10 +14,10 @@ document.addEventListener('DOMContentLoaded', function () {
         errorPrefix: 'error-',
         ids: {
             name: 'cat-name',
-            phone: 'phone',
             year: 'year',
             month: 'month',
             gender: 'gender',
+            breed: 'cat-breed',
             address: 'address',
             additional: 'additional',
             description: 'description',
@@ -31,10 +31,10 @@ document.addEventListener('DOMContentLoaded', function () {
         errorPrefix: 'edit-error-',
         ids: {
             name: 'edit-cat-name',
-            phone: 'edit-phone',
             year: 'edit-year',
             month: 'edit-month',
             gender: 'edit-gender',
+            breed: 'edit-cat-breed',
             address: 'edit-address',
             additional: 'edit-additional',
             description: 'edit-description',
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // SECTION SWITCHING (Post / My Cats)
 
-    const SECTION_IDS = ['post-section', 'my-cats-section'];
+    const SECTION_IDS = ['post-section', 'my-cats-section', 'favorite-cats-section', 'adopted-cats-section'];
 
     function showSection(sectionId, tabId) {
         SECTION_IDS.forEach(function (id) {
@@ -166,6 +166,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const postTab = getEl('post-tab');
     const myCatsTab = getEl('my-cats-tab');
+    const favoriteCatsTab = getEl('favorite-cats-tab');
+    const adoptedCatsTab = getEl('adopted-cats-tab');
 
     if (postTab && myCatsTab) {
         postTab.addEventListener('click', function () {
@@ -173,6 +175,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         myCatsTab.addEventListener('click', function () {
             showSection('my-cats-section', 'my-cats-tab');
+        });
+        if (favoriteCatsTab) favoriteCatsTab.addEventListener('click', function () {
+            showSection('favorite-cats-section', 'favorite-cats-tab');
+        });
+        if (adoptedCatsTab) adoptedCatsTab.addEventListener('click', function () {
+            showSection('adopted-cats-section', 'adopted-cats-tab');
         });
     }
 
@@ -246,6 +254,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const name = getValue('edit-name');
             const email = getValue('edit-email');
+            const phoneNumber = getValue('edit-phone-number');
             const file = profilePicInput ? profilePicInput.files[0] : null;
 
             let profilePictureUrl = profilePicPreview ? profilePicPreview.src : '';
@@ -267,6 +276,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     body: JSON.stringify({
                         name: name,
                         email: email,
+                        phoneNumber: phoneNumber,
                         profilePicture: profilePictureUrl
                     })
                 });
@@ -446,12 +456,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const name = getValue(ids.name);
         if (!name) fail('cat-name', 'Cat name is required');
 
-        // Phone
-        const phone = getValue(ids.phone);
-        if (!/^01\d{9}$/.test(phone)) {
-            fail('phone', 'Invalid format. 11 digits starting with 01');
-        }
-
         // Age
         const year = parseInt(getValue(ids.year), 10);
         if (isNaN(year) || year < 0 || year > 25) fail('year', 'Must be between 0-25');
@@ -483,8 +487,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 name: name,
                 year: year,
                 month: month,
-                phone: phone,
                 gender: getValue(ids.gender),
+                breed: getValue(ids.breed),
                 address: getValue(ids.address),
                 additional: getValue(ids.additional),
                 description: getValue(ids.description)
@@ -517,7 +521,7 @@ document.addEventListener('DOMContentLoaded', function () {
         params.append('year', data.year);
         params.append('month', data.month);
         params.append('catGender', data.gender);
-        params.append('ownerPhone', data.phone);
+        params.append('catBreed', data.breed);
         params.append('ownerAddress', data.address);
         params.append('additionalInfo', data.additional);
         params.append('catDescription', data.description);
@@ -558,8 +562,7 @@ document.addEventListener('DOMContentLoaded', function () {
             setValue('edit-month', monthMatch ? monthMatch[1] : 0);
 
             setValue('edit-gender', cat.gender);
-			setValue('edit-status', String(cat.adopted) === '1' ? '1' : '0');
-            setValue('edit-phone', cat.phone);
+			setValue('edit-cat-breed', cat.breed);
             setValue('edit-address', cat.address);
             setValue('edit-additional', cat.additional);
             setValue('edit-description', cat.description);
@@ -610,7 +613,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 const params = buildCatParams(form.data, media);
                 params.append('catId', getValue('edit-cat-id'));
-                params.append('adoptStatus', getValue('edit-status'));
 
                 const data = await postParams('update-cat.jsp', params);
 
