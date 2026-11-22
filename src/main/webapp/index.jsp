@@ -131,12 +131,22 @@ boolean isAdmin = "admin".equals(userRole);
                             <div id="custom-video-modal" class="custom-video-modal">
                                 <div class="custom-modal-content">
                                     <video id="custom-video-player" controls>
-                                        <source src="feature/feature.mp4" type="video/mp4" />
+                                        <source src="${pageContext.request.contextPath}/feature/feature.mp4" preload="metadata" type="video/mp4" />
                                         Your browser does not support the video tag.
                                     </video>
                                 </div>
                             </div>
-                        </div>
+<div id="custom-video-modal" class="custom-video-modal">
+    <div class="custom-modal-content">
+        <video id="custom-video-player"
+       src="${pageContext.request.contextPath}/feature/feature.mp4"
+       preload="auto"
+       playsinline
+       controls>
+    Your browser does not support the video tag.
+</video>
+    </div>
+</div>                        </div>
                     </div>
 
                     <div class="hero-images">

@@ -187,7 +187,7 @@ if (!isAdmin) {
             </div>
           </div>
           <div id="user-container">
-            <table class="table">
+           <table class="table">
               <!-- head -->
               <thead>
                 <tr>

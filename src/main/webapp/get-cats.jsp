@@ -14,6 +14,7 @@
                 json.put("id", rs.getString("id"));
                 json.put("name", rs.getString("cat_name"));
                 json.put("image", rs.getString("cat_image"));
+                json.put("video", rs.getString("cat_video"));
                 json.put("age", rs.getString("cat_age"));
                 json.put("gender", rs.getString("cat_gender"));
                 json.put("description", rs.getString("cat_description"));

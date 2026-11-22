@@ -28,6 +28,7 @@ String ownerAddress = request.getParameter("ownerAddress");
 String phone = request.getParameter("ownerPhone");
 String additionalInfo = request.getParameter("additionalInfo");
 String catImageUrl = request.getParameter("catImageUrl");
+String catVideoUrl = request.getParameter("catVideoUrl");
 String adoptStatus = request.getParameter("adoptStatus");
 
 // validation
@@ -56,37 +57,36 @@ if (month > 0) {
 }
 if (catAge.isEmpty()) catAge = "0 months";
 
-try {
-    Connection conn = DBConnection.getConnection();
-    String sql = "UPDATE cats SET cat_name = ?, cat_image = ?, cat_age = ?, cat_gender = ?, " +
-                 "cat_description = ?, owner_phone = ?, owner_address = ?, additional_information = ?, adopted = ?," +
-                 "owner_name = ?, owner_email = ?, owner_image = ?" +
-                 "WHERE id = ? AND cat_owner_id = ?";
-    PreparedStatement ps = conn.prepareStatement(sql);
-    ps.setString(1, catName);
-    ps.setString(2, catImageUrl);
-    ps.setString(3, catAge.trim());
-    ps.setString(4, catGender);
-    ps.setString(5, catDescription);
-    ps.setString(6, phone != null ? phone : "");
-    ps.setString(7, ownerAddress != null ? ownerAddress : "");
-    ps.setString(8, additionalInfo != null ? additionalInfo : "");
-    ps.setString(9, adoptStatus != null ? adoptStatus : "0");
-    ps.setString(10, userName);
-    ps.setString(11, userEmail);
-    ps.setString(12, userProfilePicture);
-    ps.setString(13, catId);
-    ps.setString(14, userId);
+try (Connection conn = DBConnection.getConnection();
+	     PreparedStatement ps = conn.prepareStatement(
+	         "UPDATE cats SET cat_name = ?, cat_image = ?, cat_video = ?, cat_age = ?, cat_gender = ?, " +
+	         "cat_description = ?, owner_phone = ?, owner_address = ?, additional_information = ?, adopted = ?, " +
+	         "owner_name = ?, owner_email = ?, owner_image = ? " +
+	         "WHERE id = ? AND cat_owner_id = ?"
+	     )) {
 
-    int rows = ps.executeUpdate();
-    success = rows > 0;
+	    ps.setString(1, catName);
+	    ps.setString(2, catImageUrl);
+	    ps.setString(3, catVideoUrl); 
+	    ps.setString(4, catAge.trim());
+	    ps.setString(5, catGender);
+	    ps.setString(6, catDescription);
+	    ps.setString(7, phone != null ? phone : "");
+	    ps.setString(8, ownerAddress != null ? ownerAddress : "");
+	    ps.setString(9, additionalInfo != null ? additionalInfo : "");
+	    ps.setInt(10, "1".equals(adoptStatus) ? 1 : 0);
+	    ps.setString(11, userName);
+	    ps.setString(12, userEmail);
+	    ps.setString(13, userProfilePicture);
+	    ps.setString(14, catId);
+	    ps.setString(15, userId);
 
-    ps.close();
-    conn.close();
-} catch (Exception e) {
-    message = "Database error: " + e.getMessage();
-    e.printStackTrace();
-}
+	    int rows = ps.executeUpdate();
+	    success = rows > 0;
+	} catch (Exception e) {
+	    message = "Database error: " + e.getMessage();
+	    e.printStackTrace();
+	}
 
 // return JSON safely
 json.put("success", success);

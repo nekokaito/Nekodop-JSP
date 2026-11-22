@@ -402,13 +402,12 @@ try {
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="edit-status">Adopt Status</label>
-                                        <select id="edit-status" required>
-                                            <option value="" disabled>Select status</option>
-                                            <option value="0">Not Yet</option>
-                                            <option value="1">Yes Adopted</option>
-                                        </select>
-                                    </div>
+    <label for="edit-status">Adopt Status</label>
+    <select id="edit-status" required>
+        <option value="0" selected>Not Yet</option>
+        <option value="1">Yes Adopted</option>
+    </select>
+</div>
                                     <div class="form-group">
                                         <label for="edit-phone">Phone Number</label>
                                         <input type="text" id="edit-phone" required />
@@ -421,6 +420,12 @@ try {
                                     <input type="file" id="edit-cat-image-new" accept="image/*" />  
                                     <span class="error" id="edit-error-image"></span>
                                 </div>
+                                <div class="form-group">
+    <input type="hidden" id="edit-cat-video-current" />
+    <label for="edit-cat-video-new">Update Cat Video (Optional)</label>
+    <input type="file" id="edit-cat-video-new" accept="video/mp4,video/webm,video/quicktime" />
+    <span class="error" id="edit-error-video"></span>
+</div>
                                 <div class="form-group">
                                     <label for="edit-address">Address</label>
                                     <input type="text" id="edit-address" required />
