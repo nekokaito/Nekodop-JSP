@@ -3,10 +3,12 @@ document.addEventListener('DOMContentLoaded', function () {
   var cats = [];
 
   var searchInput = document.getElementById("search-input");
+  var ageFilter = document.getElementById("age-filter");
   var maleCheckbox = document.getElementById("male-filter");
   var femaleCheckbox = document.getElementById("female-filter");
 
   if (searchInput) searchInput.addEventListener("input", applyFilters);
+  if (ageFilter) ageFilter.addEventListener("change", applyFilters);
   if (maleCheckbox) maleCheckbox.addEventListener("change", applyFilters);
   if (femaleCheckbox) femaleCheckbox.addEventListener("change", applyFilters);
  
@@ -29,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function applyFilters() {
     var searchQuery = searchInput ? searchInput.value.toLowerCase() : "";
+    var selectedAge = ageFilter ? ageFilter.value : "all";
     var maleChecked = maleCheckbox ? maleCheckbox.checked : false;
     var femaleChecked = femaleCheckbox ? femaleCheckbox.checked : false;
 
@@ -37,10 +40,25 @@ document.addEventListener('DOMContentLoaded', function () {
       var genderMatch = (!maleChecked && !femaleChecked) ||
                         (maleChecked && cat.gender.toLowerCase() === "male") ||
                         (femaleChecked && cat.gender.toLowerCase() === "female");
-      return nameMatch && genderMatch;
+      var ageMatch = selectedAge === "all" || getAgeCategory(cat.age) === selectedAge;
+      return nameMatch && genderMatch && ageMatch;
     });
 
     renderCats(filteredCats);
+  }
+
+  function getAgeCategory(age) {
+    var ageText = String(age || "").toLowerCase();
+    var yearsMatch = ageText.match(/(\d+)\s*years?/);
+    var monthsMatch = ageText.match(/(\d+)\s*months?/);
+    var years = yearsMatch ? parseInt(yearsMatch[1], 10) : 0;
+    var months = monthsMatch ? parseInt(monthsMatch[1], 10) : 0;
+    var ageInYears = years + months / 12;
+
+    if (ageInYears < 1) return "kitten";
+    if (ageInYears < 4) return "young";
+    if (ageInYears < 8) return "adult";
+    return "senior";
   }
 
   function renderCats(catList) {

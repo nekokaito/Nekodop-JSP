@@ -230,7 +230,20 @@ boolean isAdmin = "admin".equals(userRole);
             <div id="explore" class="explore">
                 <h1 class="section-title">Explore Our <span class="highlight">Cats</span></h1>
                 <div class="filter-section">
-                    <input type="text" id="search-input" placeholder="Search by name" />
+                    <div class="search-field">
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                        <input type="text" id="search-input" placeholder="Search by name" aria-label="Search cats by name" />
+                    </div>
+
+                    <label class="age-filter" for="age-filter">Age
+                        <select id="age-filter">
+                            <option value="all">Any age</option>
+                            <option value="kitten">Kitten (under 1 year)</option>
+                            <option value="young">Young (1–3 years)</option>
+                            <option value="adult">Adult (4–7 years)</option>
+                            <option value="senior">Senior (8+ years)</option>
+                        </select>
+                    </label>
 
                     <div id="gender-filters">
                         <label><input type="checkbox" id="male-filter" /> Male</label>
