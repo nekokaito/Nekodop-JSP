@@ -23,13 +23,48 @@
 
 #post-container .card {
   position: relative;
-  width: min(100%, 390px);
+  width: min(100%, 350px);
   height: auto;
   align-self: start;
 }
 
+.dashboard-cat-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dashboard-cat-title h2 {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.post-status {
+  flex: 0 0 auto;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+.post-status-pending {
+  background: #e2ddc9;
+  color: #332f22;
+}
+.post-status-approved {
+  background: #6ddd96;
+  color: #174d2b;
+}
+.post-status-rejected {
+  background: #e96d6d;
+  color: #fff;
+}
+.post-status-adopted {
+  background: #d9f2e3;
+  color: #23653b;
+}
+
 #post-container .card-text p {
-  margin: 6px 0;
   overflow-wrap: anywhere;
 }
 
@@ -59,6 +94,34 @@
   padding: 18px;
   color: #9b1c1c;
   background: #fff0f0;
+  border-radius: 10px;
+}
+
+.adopted-cats-section {
+  padding: 36px 20px;
+}
+
+.adopted-cats-table {
+  min-width: 700px;
+}
+
+.adoption-person {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 150px;
+}
+
+.adoption-person img {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.adoption-person .adoption-cat-image,
+.adoption-cat-image {
   border-radius: 10px;
 }
 .posts-header,

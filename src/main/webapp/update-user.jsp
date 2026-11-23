@@ -27,6 +27,13 @@
     PreparedStatement ps = null;
     JSONObject res = new JSONObject();
     ResultSet rs = null;
+    if (!phoneNumber.matches("01[0-9]{9}")) {
+        res.put("success", false);
+        res.put("error", "Phone number must be exactly 11 digits and start with 01.");
+        response.setContentType("application/json");
+        response.getWriter().write(res.toString());
+        return;
+    }
     try {
         conn = DBConnection.getConnection();
         ps = conn.prepareStatement("UPDATE users SET name=?, email=?, phone_number=?, profile_picture=? WHERE id=?");

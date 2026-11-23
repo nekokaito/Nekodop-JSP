@@ -41,7 +41,7 @@
   padding: 0;
   border-radius: 50%;
   background: #fff;
-  color: #000;
+  color: #c4b5fd;
   font-size: 22px;
   box-shadow: none;
   cursor: pointer;
@@ -65,7 +65,7 @@
 
 .favorite-button svg path {
   fill: transparent;
-  stroke: #000;
+  stroke: #c4b5fd;
   stroke-width: 1.8;
   stroke-linecap: round;
   stroke-linejoin: round;

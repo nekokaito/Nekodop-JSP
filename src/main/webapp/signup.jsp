@@ -39,6 +39,8 @@
         if (name == null || email == null || phoneNumber == null || password == null || rePassword == null ||
             name.trim().isEmpty() || email.trim().isEmpty() || phoneNumber.trim().isEmpty() || password.isEmpty() || rePassword.isEmpty()) {
             message = "All fields are required!";
+        } else if (!phoneNumber.matches("01[0-9]{9}")) {
+            message = "Phone number must be exactly 11 digits and start with 01.";
         } else if (!password.equals(rePassword)) {
             message = "Passwords do not match!";
         } else if (passwordError != null) {
@@ -160,7 +162,7 @@
           </div>
           <div class="form-group">
             <label for="phone-number">Phone Number</label>
-            <input type="tel" id="phone-number" name="phone_number" autocomplete="tel" required />
+            <input type="tel" id="phone-number" name="phone_number" autocomplete="tel" inputmode="numeric" pattern="01[0-9]{9}" maxlength="11" minlength="11" placeholder="Your WhatsApp Number. Ex: 016XXXXXXXX" title="Enter 11 digits starting with 01" required />
           </div>
           <div class="form-group">
             <label for="profile-photo">Upload Profile Photo</label>
@@ -205,6 +207,11 @@
       const fileInput = document.getElementById("profile-photo");
       const hiddenInput = document.getElementById("profile-photo-url");
       const submitBtn = document.getElementById("submit-btn");
+      const phoneInput = document.getElementById("phone-number");
+
+      phoneInput.addEventListener("input", function() {
+          this.value = this.value.replace(/\\D/g, "").slice(0, 11);
+      });
 
       fileInput.addEventListener("change", async function() {
           const file = this.files[0];
@@ -245,6 +252,13 @@
           const password = document.getElementById("password").value.trim();
           const rePassword = document.getElementById("re-password").value.trim();
           const photoUrl = hiddenInput.value.trim();
+          const phoneNumber = phoneInput.value;
+
+          if (!/^01[0-9]{9}$/.test(phoneNumber)) {
+              e.preventDefault();
+              showToast("Phone number must be exactly 11 digits and start with 01.", "error");
+              return;
+          }
 
           if (!uploadSuccess || !photoUrl) {
               e.preventDefault();

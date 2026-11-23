@@ -314,23 +314,12 @@ boolean isAdmin = "admin".equals(userRole);
                         <img class="" src="images/bkash_logo.png" alt="bKash" />
                     </div>
                     <div class="text-content">
-                        <h2>How to Donate</h2>
-                        <p>
-                            We currently accept donations via
-                            <span class="highlight">bKash.</span>
-                        </p>
-                        <ul class="support-list">
-                            <li>
-                                bKash Number:
-                                <span style="font-family: consolas; border: 1px solid #ccc; margin-left: 2px; padding: 2px 4px; font-weight: bold;">
-                                    01630844517
-                                </span>
-                            </li>
-                            <li>Account Type: Personal</li>
-                            <li>
-                                Reference: Nekodop Donation<small> (Please mention this during payment)</small>
-                            </li>
-                        </ul>
+                        <h2>Support Us</h2>
+                        <p>By clicking this button, you can support us via many payment methods.</p>
+                        <button type="button" class="supportkori-inline-button" id="supportkori-open">
+                            <i class="fa-solid fa-mug-hot" aria-hidden="true"></i>
+                            Support Nekodop
+                        </button>
                     </div>
                 </section>
                 <div class="text-content">
@@ -412,6 +401,14 @@ boolean isAdmin = "admin".equals(userRole);
             <a href="https://facebook.com" target="blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
         </div>
     </footer>
+
+    <div class="supportkori-modal" id="supportkori-modal" aria-hidden="true">
+        <div class="supportkori-modal-backdrop" data-supportkori-close></div>
+        <section class="supportkori-modal-panel" role="dialog" aria-modal="true" aria-label="Support Nekodop">
+            <button type="button" class="supportkori-modal-close" aria-label="Close support window" data-supportkori-close>&times;</button>
+            <iframe id="supportkori-frame" title="Support Nekodop" allow="payment" loading="lazy"></iframe>
+        </section>
+    </div>
     
     <script src="https://kit.fontawesome.com/ef66a13064.js" crossorigin="anonymous"></script>
     <script src="scripts/reponsive.js"></script>
@@ -420,6 +417,7 @@ boolean isAdmin = "admin".equals(userRole);
     <script src="scripts/explore.js?v=2"></script>
     <script src="scripts/video.js"></script>
     <script src="scripts/user-nav.js"></script>
+    <script src="scripts/supportkori-widget.js"></script>
     
     
 </body>

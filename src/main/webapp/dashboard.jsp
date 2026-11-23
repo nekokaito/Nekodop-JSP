@@ -69,6 +69,7 @@ if (!isAdmin) {
           <li>
             <a href="#users">Users</a>
           </li>
+          <li><a href="#adopted-cats">Adopted</a></li>
           <li><a href="#posts">Posts</a></li>
 
            <% if (userId == null) { %>
@@ -138,6 +139,12 @@ if (!isAdmin) {
                   <p id=""><i class="fa-solid fa-file"></i></p>
                 </div>
               </a>
+              <a href="#adopted-cats">
+                <div class="counter-item">
+                  <h3>Adopted</h3>
+                  <p><i class="fa-solid fa-heart"></i></p>
+                </div>
+              </a>
               <a href="profile.jsp">
                 <div class="counter-item">
                   <h3>Profile</h3>
@@ -176,6 +183,10 @@ if (!isAdmin) {
               <h3>Rejected Posts</h3>
               <p id="rejected-count">0</p>
             </div>
+            <div class="counter-item">
+              <h3>Adopted Cats</h3>
+              <p id="adopted-count">0</p>
+            </div>
           </div>
         </div>
         <!-- Users Section -->
@@ -208,6 +219,29 @@ if (!isAdmin) {
           </div>
         </div>
 
+        <!-- Adopted Cats Section -->
+        <div id="adopted-cats" class="adopted-cats-section">
+          <div class="posts-header">
+            <h2 class="posts-title">Adopted Cats</h2>
+            <div class="posts-description">Adoption history with cat owners, adopters, and adoption dates.</div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="table adopted-cats-table">
+              <thead>
+                <tr>
+                  <th>Cat</th>
+                  <th>Owner</th>
+                  <th>Adopted By</th>
+                  <th>Adopted At</th>
+                </tr>
+              </thead>
+              <tbody id="adopted-cats-list">
+                <tr><td colspan="4">Loading adopted cats...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <!-- Posts Section -->
         <div id="posts" class="posts">
           <div class="posts-header">
@@ -228,6 +262,7 @@ if (!isAdmin) {
                 <option value="pending">Pending</option>
                 <option value="approved">Approved</option>
                 <option value="rejected">Rejected</option>
+                <option value="adopted">Adopted</option>
               </select>
             </div>
           </div>

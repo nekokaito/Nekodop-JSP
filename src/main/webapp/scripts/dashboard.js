@@ -155,9 +155,57 @@ document.addEventListener('DOMContentLoaded', function () {
         return allCats.filter(function (cat) {
           return cat.status === "2";
         });
+      case "adopted":
+        return allCats.filter(function (cat) {
+          return String(cat.adopted) === "1" || Boolean(cat.adoptedBy || cat.adopted_by);
+        });
       default:
         return allCats;
     }
+  }
+
+  function escapeHtml(value) {
+    return String(value == null ? "" : value).replace(/[&<>"']/g, function (character) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[character];
+    });
+  }
+
+  function renderAdoptedCats() {
+    var list = document.getElementById("adopted-cats-list");
+    if (!list) return;
+    var adoptedCats = filterCats("adopted");
+    list.innerHTML = "";
+
+    if (!adoptedCats.length) {
+      list.innerHTML = "<tr><td colspan='4'>No adopted cats yet.</td></tr>";
+      return;
+    }
+
+    adoptedCats.forEach(function (cat) {
+      var row = document.createElement("tr");
+      var catImage = escapeHtml(cat.image || "images/No_Cats.png");
+      var ownerImage = escapeHtml(cat.ownerImage || "images/profile.png");
+      var adopterImage = escapeHtml(cat.adopterImage || "images/profile.png");
+      var catName = escapeHtml(cat.name || "Unnamed cat");
+      var ownerName = escapeHtml(cat.ownerName || "Unknown owner");
+      var adopterName = escapeHtml(cat.adopterName || "Unknown adopter");
+      var adoptedAt = escapeHtml(cat.adoptedAt || "Unknown");
+
+      row.innerHTML = `
+        <td><div class="adoption-person"><img class="adoption-cat-image" src="${catImage}" alt="${catName}" loading="lazy"><a href="cat-details.jsp?id=${encodeURIComponent(cat.id)}">${catName}</a></div></td>
+        <td><div class="adoption-person"><img src="${ownerImage}" alt="" loading="lazy"><span>${ownerName}</span></div></td>
+        <td><div class="adoption-person"><img src="${adopterImage}" alt="" loading="lazy"><span>${adopterName}</span></div></td>
+        <td>${adoptedAt}</td>
+      `;
+      list.appendChild(row);
+    });
+  }
+
+  function updatePostCounters() {
+    document.getElementById("approved-count").textContent = filterCats("approved").length;
+    document.getElementById("pending-count").textContent = filterCats("pending").length;
+    document.getElementById("rejected-count").textContent = filterCats("rejected").length;
+    document.getElementById("adopted-count").textContent = filterCats("adopted").length;
   }
 
   // setup filter and refresh functionality
@@ -183,6 +231,8 @@ document.addEventListener('DOMContentLoaded', function () {
         var selected = filterSelect.value;
         var filtered = filterCats(selected);
         renderPosts(filtered);
+        renderAdoptedCats();
+        updatePostCounters();
       });
     });
   }
@@ -219,32 +269,32 @@ document.addEventListener('DOMContentLoaded', function () {
       // optimize cloudinary url
       var optimizedImage = cat.image ? cat.image.replace("/upload/", "/upload/f_webp,q_40/") : "images/No_Cats.png";
       var age = String(cat.age || "Age unknown").replace(/^0 years\s*/, "");
-      var isAdopted = String(cat.adopted) === "1";
-      var approvalLabel = cat.status === "1" ? "Approved" : cat.status === "2" ? "Rejected" : "Pending";
+      var isAdopted = String(cat.adopted) === "1" || Boolean(cat.adoptedBy || cat.adopted_by);
+      var postStatus = isAdopted ? "Adopted" : cat.status === "1" ? "Approved" : cat.status === "2" ? "Rejected" : "Pending";
+      var statusClass = postStatus.toLowerCase();
 
-      var card = document.createElement("a");
-      card.href = "cat-details.jsp?id=" + cat.id;
-      card.className = "card";
+      var card = document.createElement("div");
+      card.className = "card cat-card-link";
       card.innerHTML = `
-	        <div class="cat-img">
-	          <img src="${optimizedImage}" alt="${cat.name}" loading="lazy" />
-	        </div>
-	        <div class="card-body">
-	          <div class="card-text">
-	            <h2>${cat.name || "Unnamed cat"}</h2>
-	            <p><strong>Age:</strong> ${age}</p>
-	            <p><strong>Gender:</strong> ${cat.gender || "Unknown"}</p>
-	            <p><strong>Breed:</strong> <span class="badge badge-breed">${cat.breed || cat.cat_breed || "Unknown"}</span></p>
-	            <p><strong>Owner:</strong> ${cat.ownerName || "Unknown"}</p>
-	            <p><strong>Phone:</strong> ${cat.phone || "N/A"}</p>
-	            <p><strong>Approval:</strong> <span class="badge badge-approval">${approvalLabel}</span></p>
-	            <p><strong>Adoption:</strong> <span class="badge ${isAdopted ? "badge-adopted" : "badge-available"}">${isAdopted ? "Adopted" : "Available"}</span></p>
-	            ${isAdopted ? `<p><strong>Adopted by:</strong> ${cat.adopterName || cat.adoptedBy || "Unknown"}</p><p><strong>Adopted at:</strong> ${cat.adoptedAt || "Unknown"}</p>` : ""}
+	        <a class="cat-card-main" href="cat-details.jsp?id=${encodeURIComponent(cat.id)}">
+	          <div class="cat-img">
+	            <img src="${optimizedImage}" alt="${cat.name || "Cat"}" loading="lazy" />
 	          </div>
-	          <div class="owner-img">
-	            <img id="owner-${cat.id}" src="${cat.ownerImage || "images/profile.png"}" alt="Owner of ${cat.name || "cat"}" loading="lazy" />
+	          <div class="card-body">
+	            <div class="card-text">
+	              <div class="dashboard-cat-title">
+	                <h2>${cat.name || "Unnamed cat"}</h2>
+	                <span class="post-status post-status-${statusClass}">${postStatus}</span>
+	              </div>
+	              <p>${age}</p>
+	              <p>${cat.gender || "Unknown"}</p>
+	              <p>${cat.breed || cat.cat_breed || ""}</p>
+	            </div>
+	            <div class="owner-img">
+	              <img id="owner-${cat.id}" src="${cat.ownerImage || "images/profile.png"}" alt="Owner of ${cat.name || "cat"}" loading="lazy" />
+	            </div>
 	          </div>
-	        </div>
+	        </a>
 	      `;
 
       container.appendChild(card);
@@ -269,14 +319,8 @@ document.addEventListener('DOMContentLoaded', function () {
         var filtered = filterCats(initialFilter);
         renderPosts(filtered);
 
-        // counters
-        var approvedCount = filterCats("approved").length;
-        var pendingCount = filterCats("pending").length;
-        var rejectedCount = filterCats("rejected").length;
-
-        document.getElementById("approved-count").textContent = approvedCount;
-        document.getElementById("pending-count").textContent = pendingCount;
-        document.getElementById("rejected-count").textContent = rejectedCount;
+        renderAdoptedCats();
+        updatePostCounters();
       });
 
 });

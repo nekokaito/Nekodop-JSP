@@ -54,6 +54,13 @@ document.addEventListener('DOMContentLoaded', function () {
         return el ? el.value.trim() : '';
     }
 
+    const profilePhoneInput = getEl('edit-phone-number');
+    if (profilePhoneInput) {
+        profilePhoneInput.addEventListener('input', function () {
+            this.value = this.value.replace(/\\D/g, '').slice(0, 11);
+        });
+    }
+
     function setValue(id, value) {
         const el = getEl(id);
         if (el) el.value = (value === null || value === undefined) ? '' : value;
@@ -259,6 +266,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
             let profilePictureUrl = profilePicPreview ? profilePicPreview.src : '';
 
+            if (!/^01[0-9]{9}$/.test(phoneNumber)) {
+                showToast('Phone number must be exactly 11 digits and start with 01.', 'error');
+                return;
+            }
+
             const sizeError = getFileSizeError(file, 'image');
             if (sizeError) {
                 showToast(sizeError, 'error');
@@ -431,6 +443,25 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     const deleteBtns = document.querySelectorAll('.delete-cat');
+    const myCatsContainer = getEl('cats-container');
+    if (myCatsContainer) {
+        function openCatDetails(card) {
+            if (!card) return;
+            window.location.href = 'cat-details.jsp?id=' + encodeURIComponent(card.dataset.id);
+        }
+
+        myCatsContainer.addEventListener('click', function (event) {
+            if (event.target.closest('button, a, input, select, textarea')) return;
+            openCatDetails(event.target.closest('.update-cat'));
+        });
+
+        myCatsContainer.addEventListener('keydown', function (event) {
+            if (event.key !== 'Enter') return;
+            const card = event.target.closest('.update-cat');
+            if (card && !event.target.closest('button, a, input, select, textarea')) openCatDetails(card);
+        });
+    }
+
     deleteBtns.forEach(function (btn) {
         btn.addEventListener('click', function () {
             const catCard = this.closest('.cat-card');

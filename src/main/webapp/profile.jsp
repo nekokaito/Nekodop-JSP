@@ -93,8 +93,8 @@ List<Map<String, String>> favoriteCats = new ArrayList<>();
 List<Map<String, String>> adoptedCats = new ArrayList<>();
 try (Connection conn = DBConnection.getConnection();
      PreparedStatement ps = conn.prepareStatement(
-         "SELECT c.id, c.cat_name, c.cat_image, c.cat_age, c.cat_gender, c.cat_breed " +
-         "FROM cats c JOIN user_favorite_cats f ON f.cat_id = c.id WHERE f.user_id = ?")) {
+         "SELECT c.id, c.cat_name, c.cat_image, c.cat_age, c.cat_gender, c.cat_breed, u.profile_picture AS owner_image " +
+         "FROM cats c JOIN users u ON u.id = c.cat_owner_id JOIN user_favorite_cats f ON f.cat_id = c.id WHERE f.user_id = ?")) {
     ps.setString(1, userId);
     try (ResultSet rs = ps.executeQuery()) {
         while (rs.next()) {
@@ -105,13 +105,15 @@ try (Connection conn = DBConnection.getConnection();
             cat.put("age", rs.getString("cat_age"));
             cat.put("gender", rs.getString("cat_gender"));
             cat.put("breed", rs.getString("cat_breed"));
+            cat.put("ownerImage", rs.getString("owner_image"));
             favoriteCats.add(cat);
         }
     }
 }
 try (Connection conn = DBConnection.getConnection();
      PreparedStatement ps = conn.prepareStatement(
-         "SELECT id, cat_name, cat_image, cat_age, cat_gender, cat_breed FROM cats WHERE adopted_by = ?")) {
+         "SELECT c.id, c.cat_name, c.cat_image, c.cat_age, c.cat_gender, c.cat_breed, u.profile_picture AS owner_image " +
+         "FROM cats c JOIN users u ON u.id = c.cat_owner_id WHERE c.adopted_by = ?")) {
     ps.setString(1, userId);
     try (ResultSet rs = ps.executeQuery()) {
         while (rs.next()) {
@@ -122,6 +124,7 @@ try (Connection conn = DBConnection.getConnection();
             cat.put("age", rs.getString("cat_age"));
             cat.put("gender", rs.getString("cat_gender"));
             cat.put("breed", rs.getString("cat_breed"));
+            cat.put("ownerImage", rs.getString("owner_image"));
             adoptedCats.add(cat);
         }
     }
@@ -260,7 +263,7 @@ try (Connection conn = DBConnection.getConnection();
                                     </div>
                                     <div class="form-group">
                                         <label for="edit-phone-number">Phone Number</label>
-                                        <input type="tel" id="edit-phone-number" value="<%= userPhone != null ? userPhone : "" %>" autocomplete="tel" required>
+                                        <input type="tel" id="edit-phone-number" value="<%= userPhone != null ? userPhone : "" %>" autocomplete="tel" inputmode="numeric" pattern="01[0-9]{9}" maxlength="11" minlength="11" placeholder="Your WhatsApp Number. Ex: 016XXXXXXXX" title="Enter 11 digits starting with 01" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="edit-profile-picture">Profile Picture</label>
@@ -379,7 +382,7 @@ try (Connection conn = DBConnection.getConnection();
                             </div>
                         <% } else { %>
                             <% for (Map<String, String> cat : userCats) { %>
-                                <div class="cat-card card update-cat" data-id="<%= cat.get("id") %>">
+                                <div class="cat-card card update-cat" data-id="<%= cat.get("id") %>" role="link" tabindex="0" aria-label="View details for <%= cat.get("name") %>">
                                     <img src="<%= cat.get("image") %>" alt="<%= cat.get("name") %>" />
                                     <div class="cat-card-body">
                                         <div class="cat-info">
@@ -515,26 +518,50 @@ try (Connection conn = DBConnection.getConnection();
 
                 <div id="favorite-cats-section" class="profile-cat-list" style="display: none;">
                     <h2>Favorite Cats</h2>
+                    <div class="card-container profile-cat-grid">
                     <% if (favoriteCats.isEmpty()) { %>
                         <p>You have not favorited any cats yet.</p>
                     <% } else { for (Map<String, String> cat : favoriteCats) { %>
-                        <a class="profile-cat-item" href="cat-details.jsp?id=<%= cat.get("id") %>">
-                            <img src="<%= cat.get("image") %>" alt="<%= cat.get("name") %>" />
-                            <span><strong><%= cat.get("name") %></strong><br /><%= cat.get("breed") %> · <%= cat.get("age") %> · <%= cat.get("gender") %></span>
-                        </a>
+                        <div class="card cat-card-link profile-cat-card">
+                            <a class="cat-card-main" href="cat-details.jsp?id=<%= cat.get("id") %>">
+                                <div class="cat-img"><img src="<%= cat.get("image") != null ? cat.get("image") : "images/No_Cats.png" %>" alt="<%= cat.get("name") != null ? cat.get("name") : "Cat" %>" loading="lazy" /></div>
+                                <div class="card-body">
+                                    <div class="card-text">
+                                        <h2><%= cat.get("name") != null ? cat.get("name") : "Unnamed cat" %></h2>
+                                        <p><%= cat.get("age") != null ? cat.get("age") : "Age unknown" %></p>
+                                        <p><%= cat.get("gender") != null ? cat.get("gender") : "Unknown" %></p>
+                                        <p><%= cat.get("breed") != null ? cat.get("breed") : "" %></p>
+                                    </div>
+                                    <div class="owner-img"><img src="<%= cat.get("ownerImage") != null ? cat.get("ownerImage") : "images/profile.png" %>" alt="Owner of <%= cat.get("name") != null ? cat.get("name") : "cat" %>" loading="lazy" /></div>
+                                </div>
+                            </a>
+                        </div>
                     <% } } %>
+                    </div>
                 </div>
 
                 <div id="adopted-cats-section" class="profile-cat-list" style="display: none;">
                     <h2>Adopted Cats</h2>
+                    <div class="card-container profile-cat-grid">
                     <% if (adoptedCats.isEmpty()) { %>
                         <p>You have not adopted any cats yet.</p>
                     <% } else { for (Map<String, String> cat : adoptedCats) { %>
-                        <a class="profile-cat-item" href="cat-details.jsp?id=<%= cat.get("id") %>">
-                            <img src="<%= cat.get("image") %>" alt="<%= cat.get("name") %>" />
-                            <span><strong><%= cat.get("name") %></strong><br /><%= cat.get("breed") %> · <%= cat.get("age") %> · <%= cat.get("gender") %></span>
-                        </a>
+                        <div class="card cat-card-link profile-cat-card">
+                            <a class="cat-card-main" href="cat-details.jsp?id=<%= cat.get("id") %>">
+                                <div class="cat-img"><img src="<%= cat.get("image") != null ? cat.get("image") : "images/No_Cats.png" %>" alt="<%= cat.get("name") != null ? cat.get("name") : "Cat" %>" loading="lazy" /></div>
+                                <div class="card-body">
+                                    <div class="card-text">
+                                        <h2><%= cat.get("name") != null ? cat.get("name") : "Unnamed cat" %></h2>
+                                        <p><%= cat.get("age") != null ? cat.get("age") : "Age unknown" %></p>
+                                        <p><%= cat.get("gender") != null ? cat.get("gender") : "Unknown" %></p>
+                                        <p><%= cat.get("breed") != null ? cat.get("breed") : "" %></p>
+                                    </div>
+                                    <div class="owner-img"><img src="<%= cat.get("ownerImage") != null ? cat.get("ownerImage") : "images/profile.png" %>" alt="Owner of <%= cat.get("name") != null ? cat.get("name") : "cat" %>" loading="lazy" /></div>
+                                </div>
+                            </a>
+                        </div>
                     <% } } %>
+                    </div>
                 </div>
             </div>
         </main>
