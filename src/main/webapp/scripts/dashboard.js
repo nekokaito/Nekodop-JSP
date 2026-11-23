@@ -286,9 +286,9 @@ document.addEventListener('DOMContentLoaded', function () {
 	                <h2>${cat.name || "Unnamed cat"}</h2>
 	                <span class="post-status post-status-${statusClass}">${postStatus}</span>
 	              </div>
-	              <p>${age}</p>
-	              <p>${cat.gender || "Unknown"}</p>
-	              <p>${cat.breed || cat.cat_breed || ""}</p>
+	              <p class="cat-card-meta"><i class="fa-solid fa-cake-candles" aria-hidden="true"></i><span>${age}</span></p>
+	              <p class="cat-card-meta"><i class="fa-solid fa-venus-mars" aria-hidden="true"></i><span>${cat.gender || "Unknown"}</span></p>
+	              <p class="cat-card-meta"><i class="fa-solid fa-paw" aria-hidden="true"></i><span>${cat.breed || cat.cat_breed || "Unknown"}</span></p>
 	            </div>
 	            <div class="owner-img">
 	              <img id="owner-${cat.id}" src="${cat.ownerImage || "images/profile.png"}" alt="Owner of ${cat.name || "cat"}" loading="lazy" />

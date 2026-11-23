@@ -406,8 +406,9 @@ try (Connection conn = DBConnection.getConnection();
                                                 %>
                                                 <span class="badge <%= badgeClass %>"><%= statusText %></span>
                                             </div>
-                                            <p><%= cat.get("age") %></p>
-                                            <p><%= cat.get("gender") %></p>
+                                            <p class="cat-card-meta"><i class="fa-solid fa-cake-candles" aria-hidden="true"></i><span><%= cat.get("age") != null ? cat.get("age") : "Age unknown" %></span></p>
+                                            <p class="cat-card-meta"><i class="fa-solid fa-venus-mars" aria-hidden="true"></i><span><%= cat.get("gender") != null ? cat.get("gender") : "Unknown" %></span></p>
+                                            <p class="cat-card-meta"><i class="fa-solid fa-paw" aria-hidden="true"></i><span><%= cat.get("breed") != null ? cat.get("breed") : "Unknown" %></span></p>
                                         </div>
                                         <div class="card-actions">
                                             <div class="tooltip-container">
@@ -528,9 +529,9 @@ try (Connection conn = DBConnection.getConnection();
                                 <div class="card-body">
                                     <div class="card-text">
                                         <h2><%= cat.get("name") != null ? cat.get("name") : "Unnamed cat" %></h2>
-                                        <p><%= cat.get("age") != null ? cat.get("age") : "Age unknown" %></p>
-                                        <p><%= cat.get("gender") != null ? cat.get("gender") : "Unknown" %></p>
-                                        <p><%= cat.get("breed") != null ? cat.get("breed") : "" %></p>
+                                        <p class="cat-card-meta"><i class="fa-solid fa-cake-candles" aria-hidden="true"></i><span><%= cat.get("age") != null ? cat.get("age") : "Age unknown" %></span></p>
+                                        <p class="cat-card-meta"><i class="fa-solid fa-venus-mars" aria-hidden="true"></i><span><%= cat.get("gender") != null ? cat.get("gender") : "Unknown" %></span></p>
+                                        <p class="cat-card-meta"><i class="fa-solid fa-paw" aria-hidden="true"></i><span><%= cat.get("breed") != null ? cat.get("breed") : "Unknown" %></span></p>
                                     </div>
                                     <div class="owner-img"><img src="<%= cat.get("ownerImage") != null ? cat.get("ownerImage") : "images/profile.png" %>" alt="Owner of <%= cat.get("name") != null ? cat.get("name") : "cat" %>" loading="lazy" /></div>
                                 </div>
@@ -552,9 +553,9 @@ try (Connection conn = DBConnection.getConnection();
                                 <div class="card-body">
                                     <div class="card-text">
                                         <h2><%= cat.get("name") != null ? cat.get("name") : "Unnamed cat" %></h2>
-                                        <p><%= cat.get("age") != null ? cat.get("age") : "Age unknown" %></p>
-                                        <p><%= cat.get("gender") != null ? cat.get("gender") : "Unknown" %></p>
-                                        <p><%= cat.get("breed") != null ? cat.get("breed") : "" %></p>
+                                        <p class="cat-card-meta"><i class="fa-solid fa-cake-candles" aria-hidden="true"></i><span><%= cat.get("age") != null ? cat.get("age") : "Age unknown" %></span></p>
+                                        <p class="cat-card-meta"><i class="fa-solid fa-venus-mars" aria-hidden="true"></i><span><%= cat.get("gender") != null ? cat.get("gender") : "Unknown" %></span></p>
+                                        <p class="cat-card-meta"><i class="fa-solid fa-paw" aria-hidden="true"></i><span><%= cat.get("breed") != null ? cat.get("breed") : "Unknown" %></span></p>
                                     </div>
                                     <div class="owner-img"><img src="<%= cat.get("ownerImage") != null ? cat.get("ownerImage") : "images/profile.png" %>" alt="Owner of <%= cat.get("name") != null ? cat.get("name") : "cat" %>" loading="lazy" /></div>
                                 </div>

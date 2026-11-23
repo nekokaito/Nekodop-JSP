@@ -113,6 +113,19 @@
   display: flex;
   gap: 4px;
 }
+
+.cat-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.cat-card-meta i {
+  width: 16px;
+  flex: 0 0 16px;
+  color: #8e7bdb;
+  text-align: center;
+}
 .card-actions {
   display: flex;
   gap: 8px;

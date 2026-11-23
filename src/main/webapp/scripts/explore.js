@@ -84,9 +84,9 @@ document.addEventListener('DOMContentLoaded', function () {
                      "<div class='card-body'>" +
                        "<div class='card-text'>" +
                          "<h2>" + cat.name + "</h2>" +
-                         "<p>" + cat.age + "</p>" +
-                       "<p>" + cat.gender + "</p>" +
-                       "<p>" + (cat.breed || "") + "</p>" +
+                         "<p class='cat-card-meta'><i class='fa-solid fa-cake-candles' aria-hidden='true'></i><span>" + (cat.age || "Age unknown") + "</span></p>" +
+                       "<p class='cat-card-meta'><i class='fa-solid fa-venus-mars' aria-hidden='true'></i><span>" + (cat.gender || "Unknown") + "</span></p>" +
+                       "<p class='cat-card-meta'><i class='fa-solid fa-paw' aria-hidden='true'></i><span>" + (cat.breed || "Unknown") + "</span></p>" +
                        "</div>" +
                        "<div class='owner-img'>" +
                          "<img src='" + ownerImage + "' alt='Owner of " + cat.name + "' />" +
