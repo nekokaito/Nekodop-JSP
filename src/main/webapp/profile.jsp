@@ -73,6 +73,7 @@ try {
         cat.put("image", rs.getString("cat_image"));
         cat.put("age", rs.getString("cat_age"));
         cat.put("gender", rs.getString("cat_gender"));
+        cat.put("breed", rs.getString("cat_breed"));
         cat.put("description", rs.getString("cat_description"));
         cat.put("address", rs.getString("owner_address"));
         cat.put("additional", rs.getString("additional_information"));

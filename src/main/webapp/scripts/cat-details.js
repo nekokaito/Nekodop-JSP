@@ -17,6 +17,18 @@ document.addEventListener("DOMContentLoaded", function () {
     );
   }
 
+  function showErrorPage(message) {
+    catInfo.innerHTML =
+      "<div class='cat-error-page'>" +
+      "<img src='images/No_Cats.png' alt='Cat not found' class='error-cat-image' />" +
+      "<h2 class='error-title'>Oops! " + escapeHtml(message || "Cat not found") + "</h2>" +
+      "<p class='error-description'>The cat you're looking for might have found a new home, " +
+      "or the link may be incorrect.</p>" +
+      "<a href='index.jsp#explore' class='return-btn'>" +
+      "<i class='fas fa-paw'></i> Explore Cats</a>" +
+      "</div>";
+  }
+
   function showMessage(message) {
     if (window.showToast) showToast(message, "error");
     else window.alert(message);
@@ -86,6 +98,26 @@ document.addEventListener("DOMContentLoaded", function () {
       (cat.isFavorite ? "Remove from favorites" : "Add to favorites") +
       "'><svg viewBox='0 0 24 24' aria-hidden='true'><path d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'></path></svg></button>";
 
+    // Determine whether the current user may see the contact buttons
+    var isOwner = currentUserId === String(cat.ownerId || cat.cat_owner_id || "");
+    var isAdopter = isAdopted && currentUserId === String(cat.adoptedBy || cat.adopted_by || "");
+    var showContactButtons = !isAdopted || isOwner || isAdmin || isAdopter;
+
+    var contactButtons = "";
+    if (showContactButtons) {
+      contactButtons =
+        "<a class='whatsapp-button' href='" +
+        whatsappUrl +
+        "' target='_blank' rel='noopener noreferrer' data-cat-id='" +
+        escapeHtml(cat.id) +
+        "'><i class='fa-brands fa-whatsapp' aria-hidden='true'></i> Chat on WhatsApp</a>" +
+        "<a class='email-button' href='mailto:" +
+        escapeHtml(cat.ownerEmail || "") +
+        "' data-cat-id='" +
+        escapeHtml(cat.id) +
+        "'><i class='fa-regular fa-envelope' aria-hidden='true'></i> Send an Email</a>";
+    }
+
     catInfo.innerHTML =
       "<article class='cat-content'>" +
       "<div class='cat-image'><div id='preview-container'>" +
@@ -134,17 +166,8 @@ document.addEventListener("DOMContentLoaded", function () {
       escapeHtml(cat.additional || "None") +
       "</p></div>" +
       "<div class='action-buttons'>" +
-      favoriteButton +
-      "<a class='whatsapp-button' href='" +
-      whatsappUrl +
-      "' target='_blank' rel='noopener noreferrer' data-cat-id='" +
-      escapeHtml(cat.id) +
-      "'><i class='fa-brands fa-whatsapp' aria-hidden='true'></i> Chat on WhatsApp</a>" +
-      "<a class='email-button' href='mailto:" +
-      escapeHtml(cat.ownerEmail || "") +
-      "' data-cat-id='" +
-      escapeHtml(cat.id) +
-      "'><i class='fa-regular fa-envelope' aria-hidden='true'></i> Send an Email</a>" +
+      (showContactButtons ? favoriteButton : "") +
+      contactButtons +
       adminActions +
       "</div>" +
       "<section class='posted-by'><h3>Posted by</h3><div class='poster-info'>" +
@@ -263,7 +286,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   if (!catId) {
-    catInfo.textContent = "Cat not found.";
+    showErrorPage("Bad request");
     return;
   }
 
@@ -273,7 +296,7 @@ document.addEventListener("DOMContentLoaded", function () {
     })
     .then(function (cat) {
       if (!cat || cat.error || !cat.id) {
-        catInfo.textContent = cat && cat.error ? cat.error : "Cat not found.";
+        showErrorPage(cat && cat.error ? cat.error : "Cat not found");
         return;
       }
       if (isAdmin) {
@@ -287,6 +310,6 @@ document.addEventListener("DOMContentLoaded", function () {
     })
     .catch(function (error) {
       console.error("Error fetching cat details:", error);
-      catInfo.textContent = "Failed to load cat details.";
+      showErrorPage("Failed to load cat details");
     });
 });
